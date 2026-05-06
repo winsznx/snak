@@ -1,0 +1,40 @@
+@theme {
+  /* Colors — Venom Dark Cyberpunk */
+  --color-void: #08090d;
+  --color-carbon: #0f1117;
+  --color-graphite: #1a1d27;
+  --color-ash: #2a2d3a;
+  --color-smoke: #4a4d5a;
+  --color-silver: #8b8fa0;
+  --color-cloud: #c8ccd8;
+  --color-snow: #eef0f6;
+  --color-cyan: #00e5ff;
+  --color-magenta: #ff2d78;
+  --color-toxic: #39ff14;
+  --color-amber: #ffb800;
+  --color-violet: #8b5cf6;
+
+  /* Typography */
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Spacing */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+}
