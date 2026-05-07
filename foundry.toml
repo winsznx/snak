@@ -1,0 +1,27 @@
+[profile.default]
+src = "contracts"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+auto_detect_solc = true
+optimizer = true
+optimizer_runs = 600
+remappings = [
+    "@oz/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/",
+]
+gas_reports = ["Snak"]
+
+[fmt]
+line_length = 100
+tab_width = 4
+quote_style = "double"
+
+[rpc_endpoints]
+alfajores = "${ALFAJORES_RPC_URL}"
+celo = "${CELO_RPC_URL}"
+
+[etherscan]
+alfajores = { key = "${CELOSCAN_API_KEY}", url = "https://api-alfajores.celoscan.io/api" }
+celo = { key = "${CELOSCAN_API_KEY}", url = "https://api.celoscan.io/api" }
