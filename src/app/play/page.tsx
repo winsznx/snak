@@ -9,7 +9,12 @@ export default function Play() {
       
       {/* HUD Header */}
       <div className="absolute top-0 left-0 w-full px-6 py-4 flex justify-between items-center z-50 pointer-events-none">
-        <Link href="/" className="pointer-events-auto text-xl font-bold text-snow font-display tracking-widest uppercase hover:text-cyan transition-colors glow-text-cyan">
+        <Link
+          href="/"
+          prefetch={false}
+          aria-label="Leave the arena and return to the snak landing page"
+          className="pointer-events-auto text-xl font-bold text-snow font-display tracking-widest uppercase hover:text-cyan transition-colors glow-text-cyan"
+        >
           ← ABORT_MISSION
         </Link>
         <div className="flex gap-6 font-mono text-xs">
