@@ -5,6 +5,7 @@ import "@fontsource/space-grotesk/400.css";
 import "@fontsource/space-grotesk/700.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snak.timjosh507.workers.dev";
 
@@ -39,7 +40,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
