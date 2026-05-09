@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { ConnectButton } from "@/components/ConnectButton";
+import { CreateMatchPanel } from "@/components/CreateMatchPanel";
+import { StrikePill } from "@/components/StrikePill";
 
 export default function Play() {
   return (
@@ -8,23 +11,18 @@ export default function Play() {
       <div className="scanline"></div>
       
       {/* HUD Header */}
-      <div className="absolute top-0 left-0 w-full px-6 py-4 flex justify-between items-center z-50 pointer-events-none">
+      <div className="absolute top-0 left-0 w-full px-6 py-4 flex justify-between items-center z-50">
         <Link
           href="/"
           prefetch={false}
           aria-label="Leave the arena and return to the snak landing page"
-          className="pointer-events-auto text-xl font-bold text-snow font-display tracking-widest uppercase hover:text-cyan transition-colors glow-text-cyan"
+          className="text-xl font-bold text-snow font-display tracking-widest uppercase hover:text-cyan transition-colors glow-text-cyan"
         >
           ← ABORT_MISSION
         </Link>
-        <div className="flex gap-6 font-mono text-xs">
-          <div className="flex flex-col items-end">
-            <span className="text-silver">SYS_STATUS</span>
-            <span className="text-toxic flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-toxic rounded-full animate-pulse-neon"></span>
-              ONLINE
-            </span>
-          </div>
+        <div className="flex items-center gap-3">
+          <StrikePill />
+          <ConnectButton />
         </div>
       </div>
 
@@ -93,7 +91,17 @@ export default function Play() {
           <span>FPS: 60</span>
         </div>
       </div>
-      
+
+      {/* Open Arena (host) panel */}
+      <section className="relative z-10 w-full max-w-5xl mt-10">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-cyan">▸ HOST_ARENA</h3>
+          <span className="font-mono text-[10px] text-silver uppercase tracking-widest">
+            on-chain · stake-escrow
+          </span>
+        </div>
+        <CreateMatchPanel />
+      </section>
     </main>
   );
 }
