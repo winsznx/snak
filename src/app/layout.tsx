@@ -6,9 +6,26 @@ import "@fontsource/space-grotesk/700.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "./globals.css";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snak.timjosh507.workers.dev";
+
 export const metadata: Metadata = {
-  title: "Snak — Cyberpunk Battle Royale",
-  description: "A fast-paced, on-chain snake game on Celo.",
+  metadataBase: new URL(SITE_URL),
+  title: "Snak — Sats-staked Snake Battle Royale",
+  description: "A fast-paced, on-chain snake game on Celo. Last serpent alive takes the pool.",
+  openGraph: {
+    type: "website",
+    siteName: "Snak",
+    title: "Snak — Sats-staked Snake Battle Royale",
+    description: "A fast-paced, on-chain snake game on Celo. Last serpent alive takes the pool.",
+    url: "/",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Snak — Cyberpunk Battle Royale" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Snak — Sats-staked Snake Battle Royale",
+    description: "A fast-paced, on-chain snake game on Celo.",
+    images: ["/og.png"],
+  },
   other: {
     "talentapp:project_verification":
       "1763d7a6a8928739f805860357946c1c50b1851677b657a06c4b80142263ce8738a84125e1bc19c059b4fd1469e022a70e44ec32cc4d2b84d41f663cafbe0aba",
