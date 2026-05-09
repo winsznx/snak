@@ -1,0 +1,167 @@
+"use client";
+
+import { useState } from "react";
+import { erc20Abi, parseUnits } from "viem";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import { snakAbi } from "@/lib/abi/snak";
+import { CUSD_ADDRESS, SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
+
+const STAKE_PRESETS = [0.5, 1, 2, 5];
+const PLAYER_PRESETS = [4, 6, 10, 20];
+const DURATION_OPTIONS = [
+  { label: "30 MIN", seconds: 30 * 60 },
+  { label: "1 HR", seconds: 60 * 60 },
+  { label: "3 HR", seconds: 3 * 60 * 60 },
+  { label: "12 HR", seconds: 12 * 60 * 60 },
+];
+
+/**
+ * Single-shot create-match form. Approves cUSD only when the existing allowance
+ * is below the chosen stake (so the host's first match is two-tx, subsequent
+ * matches at the same stake are one-tx).
+ */
+export function CreateMatchPanel() {
+  const { address, isConnected } = useAccount();
+  const [stake, setStake] = useState<number>(1);
+  const [maxPlayers, setMaxPlayers] = useState<number>(6);
+  const [durationSec, setDurationSec] = useState<number>(60 * 60);
+  const [phase, setPhase] = useState<"idle" | "approving" | "creating">("idle");
+
+  const stakeWei = parseUnits(stake.toString(), 18);
+
+  const { data: allowance } = useReadContract({
+    abi: erc20Abi,
+    address: CUSD_ADDRESS,
+    functionName: "allowance",
+    args: address ? [address, SNAK_ADDRESS] : undefined,
+    query: { enabled: isConnected && isSnakDeployed && !!address },
+  });
+
+  const { writeContract, data: hash, reset, isPending } = useWriteContract();
+  const { isLoading: mining } = useWaitForTransactionReceipt({ hash });
+
+  const needsApprove = !allowance || (allowance as bigint) < stakeWei;
+  const enabled = isConnected && isSnakDeployed && !mining && !isPending;
+
+  function submit() {
+    if (!isConnected) return;
+    if (needsApprove) {
+      setPhase("approving");
+      writeContract({
+        abi: erc20Abi,
+        address: CUSD_ADDRESS,
+        functionName: "approve",
+        args: [SNAK_ADDRESS, stakeWei],
+      });
+      return;
+    }
+    setPhase("creating");
+    const deadline = BigInt(Math.floor(Date.now() / 1000) + durationSec);
+    writeContract({
+      abi: snakAbi,
+      address: SNAK_ADDRESS,
+      functionName: "createMatch",
+      args: [stakeWei, maxPlayers, deadline],
+    });
+  }
+
+  const cta = mining
+    ? phase === "approving"
+      ? "Approving stake…"
+      : "Spinning up arena…"
+    : needsApprove
+      ? `Approve $${stake} cUSD`
+      : "Open arena ▸";
+
+  return (
+    <div className="bg-carbon/80 border border-cyan/30 rounded-lg p-5 space-y-5 text-snow font-mono">
+      <div>
+        <div className="text-[10px] uppercase tracking-[0.2em] text-silver mb-2">STAKE</div>
+        <div className="flex flex-wrap gap-2">
+          {STAKE_PRESETS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setStake(s)}
+              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+                stake === s
+                  ? "border-toxic text-toxic"
+                  : "border-ash text-silver hover:text-snow"
+              }`}
+            >
+              ${s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="text-[10px] uppercase tracking-[0.2em] text-silver mb-2">SLOTS</div>
+        <div className="flex flex-wrap gap-2">
+          {PLAYER_PRESETS.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setMaxPlayers(p)}
+              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+                maxPlayers === p
+                  ? "border-magenta text-magenta"
+                  : "border-ash text-silver hover:text-snow"
+              }`}
+            >
+              {p}P
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="text-[10px] uppercase tracking-[0.2em] text-silver mb-2">WINDOW</div>
+        <div className="flex flex-wrap gap-2">
+          {DURATION_OPTIONS.map((d) => (
+            <button
+              key={d.label}
+              type="button"
+              onClick={() => setDurationSec(d.seconds)}
+              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+                durationSec === d.seconds
+                  ? "border-cyan text-cyan"
+                  : "border-ash text-silver hover:text-snow"
+              }`}
+            >
+              {d.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={submit}
+        disabled={!enabled}
+        className="w-full px-4 py-3 rounded border border-cyan bg-cyan/10 hover:bg-cyan/20 text-cyan uppercase tracking-widest text-sm disabled:opacity-30"
+      >
+        {cta}
+      </button>
+      {hash && (
+        <button type="button" onClick={() => reset()} className="text-xs text-silver underline">
+          reset
+        </button>
+      )}
+
+      {!isConnected && (
+        <p className="text-[11px] text-silver">CONNECT_RIG to spin up an arena.</p>
+      )}
+      {isConnected && !isSnakDeployed && (
+        <p className="text-[11px] text-magenta">
+          ARENA_OFFLINE — set NEXT_PUBLIC_SNAK_ADDRESS at build time.
+        </p>
+      )}
+    </div>
+  );
+}
