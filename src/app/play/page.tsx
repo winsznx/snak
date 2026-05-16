@@ -2,6 +2,8 @@ import Link from "next/link";
 import { ConnectButton } from "@/components/ConnectButton";
 import { CreateMatchPanel } from "@/components/CreateMatchPanel";
 import { JoinMatchPanel } from "@/components/JoinMatchPanel";
+import { SettlePanel } from "@/components/SettlePanel";
+import { StrikeButton } from "@/components/StrikeButton";
 import { StrikePill } from "@/components/StrikePill";
 
 export default function Play() {
@@ -23,6 +25,7 @@ export default function Play() {
         </Link>
         <div className="flex items-center gap-3">
           <StrikePill />
+          <StrikeButton />
           <ConnectButton />
         </div>
       </div>
@@ -113,6 +116,17 @@ export default function Play() {
           </div>
           <JoinMatchPanel />
         </div>
+      </section>
+
+      {/* Settlement + claim — anyone after deadline; winner claims */}
+      <section className="relative z-10 w-full max-w-5xl mt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-toxic">▸ FINALIZE</h3>
+          <span className="font-mono text-[10px] text-silver uppercase tracking-widest">
+            anyone settles · winner claims
+          </span>
+        </div>
+        <SettlePanel />
       </section>
     </main>
   );
