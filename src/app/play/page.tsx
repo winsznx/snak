@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ConnectButton } from "@/components/ConnectButton";
 import { CreateMatchPanel } from "@/components/CreateMatchPanel";
+import { JoinMatchPanel } from "@/components/JoinMatchPanel";
 import { StrikePill } from "@/components/StrikePill";
 
 export default function Play() {
@@ -92,15 +93,26 @@ export default function Play() {
         </div>
       </div>
 
-      {/* Open Arena (host) panel */}
-      <section className="relative z-10 w-full max-w-5xl mt-10">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-cyan">▸ HOST_ARENA</h3>
-          <span className="font-mono text-[10px] text-silver uppercase tracking-widest">
-            on-chain · stake-escrow
-          </span>
+      {/* Host & Join panels — distinct on-chain entry paths */}
+      <section className="relative z-10 w-full max-w-5xl mt-10 grid md:grid-cols-2 gap-5">
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-cyan">▸ HOST_ARENA</h3>
+            <span className="font-mono text-[10px] text-silver uppercase tracking-widest">
+              stake-escrow
+            </span>
+          </div>
+          <CreateMatchPanel />
         </div>
-        <CreateMatchPanel />
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-magenta">▸ JOIN_ARENA</h3>
+            <span className="font-mono text-[10px] text-silver uppercase tracking-widest">
+              by match id
+            </span>
+          </div>
+          <JoinMatchPanel />
+        </div>
       </section>
     </main>
   );
