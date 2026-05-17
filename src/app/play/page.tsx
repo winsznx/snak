@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ConnectButton } from "@/components/ConnectButton";
 import { CreateMatchPanel } from "@/components/CreateMatchPanel";
 import { JoinMatchPanel } from "@/components/JoinMatchPanel";
+import { OpenMatchesList } from "@/components/OpenMatchesList";
 import { SettlePanel } from "@/components/SettlePanel";
 import { StrikeButton } from "@/components/StrikeButton";
 import { StrikePill } from "@/components/StrikePill";
@@ -116,6 +117,17 @@ export default function Play() {
           </div>
           <JoinMatchPanel />
         </div>
+      </section>
+
+      {/* Live open arenas pulled from chain */}
+      <section className="relative z-10 w-full max-w-5xl mt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-cyan">▸ OPEN_ARENAS</h3>
+          <span className="font-mono text-[10px] text-silver uppercase tracking-widest">
+            live · sorted by deadline
+          </span>
+        </div>
+        <OpenMatchesList />
       </section>
 
       {/* Settlement + claim — anyone after deadline; winner claims */}
