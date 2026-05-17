@@ -123,24 +123,47 @@ export function OpenMatchesList() {
         .map((m) => {
           const stakeStr = Number(formatUnits(m.stake, 18)).toFixed(2);
           const poolStr = Number(formatUnits(m.prizePool, 18)).toFixed(2);
-          const minsLeft = Math.max(
+          const secondsLeft = Math.max(
             0,
-            Math.floor(Number(m.deadline - BigInt(Math.floor(Date.now() / 1000))) / 60),
+            Number(m.deadline - BigInt(Math.floor(Date.now() / 1000))),
           );
+          const minsLeft = Math.floor(secondsLeft / 60);
+          const hoursLeft = Math.floor(minsLeft / 60);
+          const timeLabel =
+            hoursLeft >= 1 ? `${hoursLeft}h ${minsLeft % 60}m` : `${minsLeft}m`;
+          // Status badge derivation:
+          //   urgent  — < 10 minutes left
+          //   filling — joinedCount / max >= 0.5
+          //   fresh   — otherwise
+          const fillRatio = m.joined / m.maxP;
+          const badge =
+            secondsLeft < 600
+              ? { label: "URGENT", color: "border-magenta text-magenta" }
+              : fillRatio >= 0.5
+                ? { label: "FILLING", color: "border-toxic text-toxic" }
+                : { label: "FRESH", color: "border-cyan text-cyan" };
+
           return (
             <li
               key={m.id.toString()}
               className="bg-carbon/60 border border-ash hover:border-cyan/40 rounded p-3 flex items-center justify-between gap-4 font-mono text-xs text-snow"
             >
-              <div className="flex items-center gap-4 min-w-0">
+              <div className="flex items-center gap-4 min-w-0 flex-wrap">
                 <span className="text-cyan uppercase tracking-widest">#{m.id.toString()}</span>
+                <span
+                  className={`px-2 py-0.5 rounded border ${badge.color} text-[10px] uppercase tracking-widest`}
+                >
+                  {badge.label}
+                </span>
                 <span className="text-silver">${stakeStr} stake</span>
-                <span className="text-silver">{m.joined}/{m.maxP} slots</span>
+                <span className="text-silver">
+                  {m.joined}/{m.maxP} slots
+                </span>
                 <span className="text-toxic">${poolStr} pool</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 shrink-0">
                 <span className="text-silver text-[10px] uppercase tracking-widest">
-                  {minsLeft}m left
+                  {timeLabel} left
                 </span>
                 <button
                   type="button"
@@ -155,7 +178,7 @@ export function OpenMatchesList() {
                   }
                   className="px-3 py-1 rounded border border-cyan text-cyan hover:bg-cyan/10 disabled:opacity-40 disabled:cursor-not-allowed uppercase tracking-widest text-[10px]"
                 >
-                  JOIN ▸
+                  {isPending ? "SIGN…" : "JOIN ▸"}
                 </button>
               </div>
             </li>
