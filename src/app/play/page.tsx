@@ -3,6 +3,7 @@ import { BoostPrizePanel } from "@/components/BoostPrizePanel";
 import { ConnectButton } from "@/components/ConnectButton";
 import { CreateMatchPanel } from "@/components/CreateMatchPanel";
 import { JoinMatchPanel } from "@/components/JoinMatchPanel";
+import { ForfeitMatchButton } from "@/components/ForfeitMatchButton";
 import { OpenMatchesList } from "@/components/OpenMatchesList";
 import { SettlePanel } from "@/components/SettlePanel";
 import { YourMatches } from "@/components/YourMatches";
@@ -143,6 +144,11 @@ export default function Play() {
           </span>
         </div>
         <YourMatches />
+      </section>
+
+      {/* Forfeit: bail before deadline with 80% refund */}
+      <section className="relative z-10 w-full max-w-5xl mt-6">
+        <ForfeitMatchButton />
       </section>
 
       {/* Sponsor: top up any active match's prize pool */}
