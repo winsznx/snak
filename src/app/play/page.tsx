@@ -4,6 +4,7 @@ import { CreateMatchPanel } from "@/components/CreateMatchPanel";
 import { JoinMatchPanel } from "@/components/JoinMatchPanel";
 import { OpenMatchesList } from "@/components/OpenMatchesList";
 import { SettlePanel } from "@/components/SettlePanel";
+import { YourMatches } from "@/components/YourMatches";
 import { StrikeButton } from "@/components/StrikeButton";
 import { StrikePill } from "@/components/StrikePill";
 
@@ -128,6 +129,19 @@ export default function Play() {
           </span>
         </div>
         <OpenMatchesList />
+      </section>
+
+      {/* Your participation history */}
+      <section className="relative z-10 w-full max-w-5xl mt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-magenta">
+            ▸ YOUR_MATCHES
+          </h3>
+          <span className="font-mono text-[10px] text-silver uppercase tracking-widest">
+            indexed from Joined · status live
+          </span>
+        </div>
+        <YourMatches />
       </section>
 
       {/* Settlement + claim — anyone after deadline; winner claims */}
