@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BoostPrizePanel } from "@/components/BoostPrizePanel";
 import { ConnectButton } from "@/components/ConnectButton";
 import { CreateMatchPanel } from "@/components/CreateMatchPanel";
 import { JoinMatchPanel } from "@/components/JoinMatchPanel";
@@ -142,6 +143,19 @@ export default function Play() {
           </span>
         </div>
         <YourMatches />
+      </section>
+
+      {/* Sponsor: top up any active match's prize pool */}
+      <section className="relative z-10 w-full max-w-5xl mt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-magenta">
+            ▸ BOOST_POOL
+          </h3>
+          <span className="font-mono text-[10px] text-silver uppercase tracking-widest">
+            sponsor any open match
+          </span>
+        </div>
+        <BoostPrizePanel />
       </section>
 
       {/* Settlement + claim — anyone after deadline; winner claims */}
