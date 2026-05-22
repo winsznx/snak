@@ -428,6 +428,50 @@ contract SnakTest is Test {
         snak.joinMatch(id);
     }
 
+    // rescue
+
+    function test_rescue_recoversStake_afterGrace() public {
+        uint256 id = _open(STAKE, 4, 1 hours);
+        vm.prank(p2);
+        snak.joinMatch(id);
+
+        vm.warp(block.timestamp + 1 hours + 3 days + 1);
+        uint256 before_ = stable.balanceOf(p2);
+        vm.prank(p2);
+        snak.rescueStake(id);
+        assertEq(stable.balanceOf(p2) - before_, STAKE);
+    }
+
+    function test_rescue_beforeGrace_reverts() public {
+        uint256 id = _open(STAKE, 4, 1 hours);
+        vm.prank(p2);
+        snak.joinMatch(id);
+        vm.warp(block.timestamp + 2 hours);
+        vm.prank(p2);
+        vm.expectRevert(Snak.RescueNotYet.selector);
+        snak.rescueStake(id);
+    }
+
+    function test_rescue_afterSettlement_reverts() public {
+        uint256 id = _runMatchToSettlement();
+        vm.warp(block.timestamp + 3 days + 1);
+        vm.prank(p2);
+        vm.expectRevert(Snak.MatchNotOpen.selector);
+        snak.rescueStake(id);
+    }
+
+    function test_rescue_twice_reverts() public {
+        uint256 id = _open(STAKE, 4, 1 hours);
+        vm.prank(p2);
+        snak.joinMatch(id);
+        vm.warp(block.timestamp + 1 hours + 3 days + 1);
+        vm.startPrank(p2);
+        snak.rescueStake(id);
+        vm.expectRevert(Snak.AlreadyRescued.selector);
+        snak.rescueStake(id);
+        vm.stopPrank();
+    }
+
     // helpers
 
     function _open(uint128 stake, uint16 maxP, uint256 duration) internal returns (uint256 id) {

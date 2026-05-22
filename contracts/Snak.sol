@@ -22,6 +22,7 @@ contract Snak is ERC721, Ownable, Pausable, ReentrancyGuard {
     uint256 public constant MIN_PLAYERS_TO_SETTLE = 1;
     uint256 public constant MAX_PLAYERS_PER_MATCH = 50;
     uint256 public constant FORFEIT_REFUND_BPS = 8000;    // forfeit refunds 80% (treasury keeps 20%)
+    uint64  public constant RESCUE_DELAY = 3 days;        // post-deadline grace before stake-rescue opens
     uint64  public constant STRIKE_COOLDOWN = 22 hours;
     uint64  public constant STRIKE_GRACE = 50 hours;
 
@@ -69,6 +70,7 @@ contract Snak is ERC721, Ownable, Pausable, ReentrancyGuard {
     mapping(uint256 => mapping(address => bool))   public hasSubmittedScore;
     mapping(uint256 => mapping(address => bool))   public hasForfeited;
     mapping(uint256 => mapping(address => bool))   public claimedPrize;
+    mapping(uint256 => mapping(address => bool))   public claimedRescue;
     mapping(uint256 => address[]) private _arenaPlayers;
 
     // seasons + rank badges
@@ -92,6 +94,7 @@ contract Snak is ERC721, Ownable, Pausable, ReentrancyGuard {
     event ScoreSubmitted(uint256 indexed matchId, address indexed player, uint64 score);
     event MatchSettled(uint256 indexed matchId, address indexed winner, uint64 winningScore, uint256 prize, uint256 treasuryCut);
     event PrizeClaimed(uint256 indexed matchId, address indexed winner, uint256 amount);
+    event StakeRescued(uint256 indexed matchId, address indexed player, uint256 amount);
     event Forfeited(uint256 indexed matchId, address indexed player, uint256 refund);
     event MatchCancelled(uint256 indexed matchId);
     event PrizeBoosted(uint256 indexed matchId, address indexed sponsor, uint256 amount);
@@ -131,6 +134,8 @@ contract Snak is ERC721, Ownable, Pausable, ReentrancyGuard {
     error NotScorer();
     error NotWinner();
     error AlreadyClaimed();
+    error AlreadyRescued();
+    error RescueNotYet();
     error NoPlayers();
     error NotEmpty();
     error SeasonNotFinalized();
@@ -330,6 +335,25 @@ contract Snak is ERC721, Ownable, Pausable, ReentrancyGuard {
 
         cUSD.safeTransfer(msg.sender, prize);
         emit PrizeClaimed(matchId, msg.sender, prize);
+    }
+
+    /// @notice Stake-rescue path for matches that never settle. After the
+    ///         deadline + RESCUE_DELAY (3 days), if the match is still not
+    ///         Settled, each joined player can pull their original stake back.
+    ///         Prevents stake-lock if the scorer never comes online.
+    function rescueStake(uint256 matchId) external nonReentrant whenNotPaused {
+        Arena storage m = matches[matchId];
+        if (!hasJoined[matchId][msg.sender]) revert NotPlayer();
+        if (hasForfeited[matchId][msg.sender]) revert AlreadyForfeited();
+        if (claimedRescue[matchId][msg.sender]) revert AlreadyRescued();
+        if (m.status == MatchStatus.Settled || m.status == MatchStatus.Cancelled) revert MatchNotOpen();
+        if (m.deadline == 0 || block.timestamp < m.deadline + RESCUE_DELAY) revert RescueNotYet();
+
+        claimedRescue[matchId][msg.sender] = true;
+        uint256 refund = m.stake;
+        m.prizePool -= m.stake;
+        cUSD.safeTransfer(msg.sender, refund);
+        emit StakeRescued(matchId, msg.sender, refund);
     }
 
     //
