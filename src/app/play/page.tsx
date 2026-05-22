@@ -6,6 +6,7 @@ import { JoinMatchPanel } from "@/components/JoinMatchPanel";
 import { CancelMatchButton } from "@/components/CancelMatchButton";
 import { ExtendDeadlinePanel } from "@/components/ExtendDeadlinePanel";
 import { ForfeitMatchButton } from "@/components/ForfeitMatchButton";
+import { RescueStakeButton } from "@/components/RescueStakeButton";
 import { OpenMatchesList } from "@/components/OpenMatchesList";
 import { SettlePanel } from "@/components/SettlePanel";
 import { YourMatches } from "@/components/YourMatches";
@@ -157,6 +158,11 @@ export default function Play() {
       {/* Creator: keep an open arena alive longer */}
       <section className="relative z-10 w-full max-w-5xl mt-6">
         <ExtendDeadlinePanel />
+      </section>
+
+      {/* Rescue: pull stake back if the match never settles */}
+      <section className="relative z-10 w-full max-w-5xl mt-6">
+        <RescueStakeButton />
       </section>
 
       {/* Sponsor: top up any active match's prize pool */}
