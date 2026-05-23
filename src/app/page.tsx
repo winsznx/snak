@@ -21,8 +21,8 @@ export default function Home() {
         </div>
         
         <nav className="hidden md:flex gap-10 text-sm font-mono text-silver tracking-widest uppercase">
-          <Link href="#arena" className="hover:text-cyan transition-colors">Arena</Link>
-          <Link href="#leaderboard" className="hover:text-cyan transition-colors">Rankings</Link>
+          <Link href="/play" className="hover:text-cyan transition-colors">Arena</Link>
+          <Link href="/leaderboard" className="hover:text-cyan transition-colors">Rankings</Link>
           <Link href="#rewards" className="hover:text-cyan transition-colors">Bounty</Link>
         </nav>
         
@@ -35,26 +35,26 @@ export default function Home() {
       </header>
 
       {/* Hero Content */}
-      <div className="relative z-10 flex-1 max-w-[1200px] mx-auto px-6 flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-24 pt-12 pb-24">
-        
+      <div className="relative z-10 flex-1 w-full max-w-[1200px] mx-auto px-5 sm:px-6 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20 pt-8 pb-16 md:pt-12 md:pb-24">
+
         {/* Left Column: Copy */}
-        <div className="flex-1 space-y-8 text-center lg:text-left z-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan/30 bg-cyan/5 text-cyan font-mono text-xs tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(0,229,255,0.1)]">
+        <div className="flex-1 w-full space-y-6 md:space-y-8 text-center lg:text-left z-20">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan/30 bg-cyan/5 text-cyan font-mono text-[10px] sm:text-xs tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(0,229,255,0.1)]">
             <span className="w-1.5 h-1.5 bg-cyan rounded-full animate-pulse-neon"></span>
             Season 1 Active
           </div>
-          
-          <h1 className="text-6xl md:text-8xl font-bold font-display leading-[0.9] tracking-tighter uppercase">
-            <span className="block text-snow mb-2">Eat.</span>
-            <span className="block text-snow mb-2">Survive.</span>
+
+          <h1 className="text-[44px] sm:text-6xl md:text-7xl lg:text-8xl font-bold font-display leading-[0.9] tracking-tight md:tracking-tighter uppercase">
+            <span className="block text-snow mb-1 md:mb-2">Eat.</span>
+            <span className="block text-snow mb-1 md:mb-2">Survive.</span>
             <span className="block text-gradient-cyan glow-text-cyan pb-2">Dominate.</span>
           </h1>
-          
-          <p className="text-lg md:text-xl text-cloud font-body leading-relaxed max-w-lg mx-auto lg:mx-0 opacity-80">
+
+          <p className="text-base sm:text-lg md:text-xl text-cloud font-body leading-relaxed max-w-lg mx-auto lg:mx-0 opacity-80">
             A high-stakes, on-chain battle royale. Outmaneuver enemy bots, grow your mass, and extract the daily cUSD prize pool.
           </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 pt-6">
+
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 sm:gap-6 pt-4 md:pt-6">
             <Link href="/play" className="btn-primary">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
               Enter Arena
@@ -67,7 +67,7 @@ export default function Home() {
         </div>
 
         {/* Right Column: Premium Game Mockup */}
-        <div className="flex-1 w-full max-w-[500px] animate-float relative z-20">
+        <div className="flex-1 w-full max-w-[480px] animate-float relative z-20">
           <div className="relative w-full aspect-square surface-elevated overflow-hidden group">
             
             {/* Top Bar of the Mockup */}
