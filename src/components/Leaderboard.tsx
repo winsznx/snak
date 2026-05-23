@@ -2,9 +2,10 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { useChainId, useConfig } from "wagmi";
+import { useConfig } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
 import { useQuery } from "@tanstack/react-query";
+import { celo } from "wagmi/chains";
 import { snakAbi } from "@/lib/abi/snak";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 import { fetchActorAggregates, formatCusd, shortAddr, type ActorEvent } from "@/lib/leaderboard";
@@ -26,13 +27,12 @@ const ACTOR_EVENTS: ActorEvent[] = [
 const PAGE_SIZE = 25;
 
 export function Leaderboard() {
-  const chainId = useChainId();
   const config = useConfig();
 
   const query = useQuery({
-    queryKey: ["snak-leaderboard", chainId, SNAK_ADDRESS],
+    queryKey: ["snak-leaderboard", celo.id, SNAK_ADDRESS],
     queryFn: async () => {
-      const client = getPublicClient(config, { chainId });
+      const client = getPublicClient(config, { chainId: celo.id });
       if (!client) return [];
       return fetchActorAggregates({
         client,
