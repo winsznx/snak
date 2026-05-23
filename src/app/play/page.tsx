@@ -21,16 +21,17 @@ export default function Play() {
       <div className="scanline"></div>
       
       {/* HUD Header */}
-      <div className="absolute top-0 left-0 w-full px-6 py-4 flex justify-between items-center z-50">
+      <div className="absolute top-0 left-0 w-full px-5 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-3 z-50">
         <Link
           href="/"
           prefetch={false}
           aria-label="Leave the arena and return to the snak landing page"
-          className="text-xl font-bold text-snow font-display tracking-widest uppercase hover:text-cyan transition-colors glow-text-cyan"
+          className="text-sm sm:text-xl font-bold text-snow font-display tracking-widest uppercase hover:text-cyan transition-colors glow-text-cyan whitespace-nowrap"
         >
-          ← ABORT_MISSION
+          <span className="hidden sm:inline">← ABORT_MISSION</span>
+          <span className="sm:hidden">← ABORT</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <StrikePill />
           <StrikeButton />
           <ConnectButton />
