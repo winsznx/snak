@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { BoostPrizePanel } from "@/components/BoostPrizePanel";
-import { ConnectButton } from "@/components/ConnectButton";
 import { CreateMatchPanel } from "@/components/CreateMatchPanel";
 import { JoinMatchPanel } from "@/components/JoinMatchPanel";
 import { CancelMatchButton } from "@/components/CancelMatchButton";
@@ -12,34 +11,28 @@ import { SettlePanel } from "@/components/SettlePanel";
 import { YourMatches } from "@/components/YourMatches";
 import { StrikeButton } from "@/components/StrikeButton";
 import { StrikePill } from "@/components/StrikePill";
+import { Header } from "@/components/Header";
 
 export default function Play() {
   return (
-    <main className="min-h-screen relative overflow-hidden bg-void flex flex-col items-center justify-center p-4">
+    <main className="app-shell flex flex-col items-center p-4 pb-16">
       {/* Background Grid & Scanlines */}
       <div className="absolute inset-0 grid-pattern opacity-50"></div>
       <div className="scanline"></div>
       
       {/* HUD Header */}
-      <div className="absolute top-0 left-0 w-full px-5 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-3 z-50">
-        <Link
-          href="/"
-          prefetch={false}
-          aria-label="Leave the arena and return to the snak landing page"
-          className="text-sm sm:text-xl font-bold text-snow font-display tracking-widest uppercase hover:text-cyan transition-colors glow-text-cyan whitespace-nowrap"
-        >
-          <span className="hidden sm:inline">← ABORT_MISSION</span>
-          <span className="sm:hidden">← ABORT</span>
-        </Link>
+      <Header showWallet />
+
+      <div className="relative z-10 mt-6 flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 rounded-lg border border-ash bg-carbon/70 p-3 backdrop-blur">
+        <Link href="/" prefetch={false} className="nav-link">Abort mission</Link>
         <div className="flex items-center gap-2 sm:gap-3">
           <StrikePill />
           <StrikeButton />
-          <ConnectButton />
         </div>
       </div>
 
       {/* Main Arena Container */}
-      <div className="relative z-10 w-full max-w-5xl aspect-[4/3] md:aspect-video surface-elevated overflow-hidden flex flex-col group">
+      <div className="relative z-10 mt-6 w-full max-w-5xl aspect-[4/3] md:aspect-video surface-elevated overflow-hidden flex flex-col group">
         
         {/* Arena Top HUD */}
         <div className="h-14 bg-carbon/90 border-b border-ash flex items-center justify-between px-6 z-30">
