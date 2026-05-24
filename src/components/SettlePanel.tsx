@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { snakAbi } from "@/lib/abi/snak";
+import { useNowSec } from "@/lib/useNowSec";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
 /**
@@ -17,6 +18,7 @@ import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 export function SettlePanel() {
   const { address } = useAccount();
   const [matchInput, setMatchInput] = useState<string>("");
+  const nowSec = useNowSec();
 
   const matchId = useMemo(() => {
     if (!matchInput.trim()) return undefined;
@@ -44,7 +46,7 @@ export function SettlePanel() {
   const { isLoading: claimMining } = useWaitForTransactionReceipt({ hash: claimHash });
 
   const status = match?.status ?? 0;
-  const deadlinePassed = match ? Number(match.deadline) * 1000 < Date.now() : false;
+  const deadlinePassed = match ? Number(match.deadline) < nowSec : false;
   const isWinner = match && address && match.winner.toLowerCase() === address.toLowerCase();
 
   // 0 = Open, 1 = Locked, 2 = Settled, 3 = Cancelled
