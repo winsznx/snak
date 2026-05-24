@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
 import { snakAbi } from "@/lib/abi/snak";
+import { useNowSec } from "@/lib/useNowSec";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
 const WINDOW = 20; // pull at most the latest 20 matches
@@ -29,6 +30,7 @@ type MatchTuple = readonly [
  */
 export function OpenMatchesList() {
   const { isConnected } = useAccount();
+  const nowSec = useNowSec();
 
   const { data: nextIdRaw } = useReadContract({
     abi: snakAbi,
@@ -61,7 +63,7 @@ export function OpenMatchesList() {
 
   const open = useMemo(() => {
     if (!results) return [];
-    const now = BigInt(Math.floor(Date.now() / 1000));
+    const now = BigInt(nowSec);
     return results
       .map((r, idx) => {
         if (r.status !== "success") return null;
@@ -90,7 +92,7 @@ export function OpenMatchesList() {
       joined: number;
       maxP: number;
     }>;
-  }, [results, startId]);
+  }, [nowSec, results, startId]);
 
   if (!isSnakDeployed) {
     return (
@@ -125,7 +127,7 @@ export function OpenMatchesList() {
           const poolStr = Number(formatUnits(m.prizePool, 18)).toFixed(2);
           const secondsLeft = Math.max(
             0,
-            Number(m.deadline - BigInt(Math.floor(Date.now() / 1000))),
+            Number(m.deadline - BigInt(nowSec)),
           );
           const minsLeft = Math.floor(secondsLeft / 60);
           const hoursLeft = Math.floor(minsLeft / 60);
