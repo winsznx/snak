@@ -24,7 +24,31 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:3000.
+Open <http://localhost:3000>.
+
+## Deploy
+
+```bash
+pnpm exec opennextjs-cloudflare build
+pnpm exec opennextjs-cloudflare deploy
+```
+
+Build-time env: `NEXT_PUBLIC_SNAK_ADDRESS`, `NEXT_PUBLIC_CUSD_ADDRESS`, `NEXT_PUBLIC_CHAIN_ID`.
+
+## Contracts
+
+```bash
+forge build
+forge test
+```
+
+## Routes
+
+| Path | Purpose |
+| --- | --- |
+| `/` | Marketing landing + live arena status |
+| `/play` | Create or join a match, settle prizes |
+| `/leaderboard` | All-time activity, ranked by total actions |
 
 ## License
 
