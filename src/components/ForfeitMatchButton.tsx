@@ -4,13 +4,13 @@ import { useState } from "react";
 import { formatUnits } from "viem";
 import {
   useAccount,
-  useReadContract,
   useReadContracts,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
 import { snakAbi } from "@/lib/abi/snak";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
+import { useNowSec } from "@/lib/useNowSec";
 
 type MatchTuple = readonly [
   creator: `0x${string}`,
@@ -33,6 +33,7 @@ type MatchTuple = readonly [
 export function ForfeitMatchButton() {
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
+  const nowSec = useNowSec();
 
   const idBn = (() => {
     try {
@@ -79,7 +80,7 @@ export function ForfeitMatchButton() {
   const { writeContract, data: hash, isPending, reset } = useWriteContract();
   const { isLoading: mining, isSuccess: confirmed } = useWaitForTransactionReceipt({ hash });
 
-  const now = BigInt(Math.floor(Date.now() / 1000));
+  const now = BigInt(nowSec);
   const status = matchTuple?.[6] ?? -1;
   const stake = matchTuple?.[1] ?? 0n;
   const deadline = matchTuple?.[3] ?? 0n;
