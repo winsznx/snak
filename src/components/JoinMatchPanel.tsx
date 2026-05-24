@@ -10,6 +10,7 @@ import {
 } from "wagmi";
 import { snakAbi } from "@/lib/abi/snak";
 import { CUSD_ADDRESS, SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
+import { useNowSec } from "@/lib/useNowSec";
 
 /**
  * Look-up-and-join panel.
@@ -23,6 +24,7 @@ export function JoinMatchPanel() {
   const { address, isConnected } = useAccount();
   const [matchInput, setMatchInput] = useState<string>("");
   const [phase, setPhase] = useState<"idle" | "approving" | "joining">("idle");
+  const nowSec = useNowSec();
 
   const matchId = useMemo(() => {
     if (!matchInput.trim()) return undefined;
@@ -55,7 +57,7 @@ export function JoinMatchPanel() {
 
   const isOpen = match?.status === 0; // MatchStatus.Open
   const isFull = match ? match.joinedCount >= match.maxPlayers : false;
-  const isExpired = match ? Number(match.deadline) * 1000 <= Date.now() : false;
+  const isExpired = match ? Number(match.deadline) <= nowSec : false;
   const needsApprove = !allowance || (allowance as bigint) < stake;
 
   function join() {
