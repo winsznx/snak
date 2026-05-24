@@ -4,12 +4,18 @@
 
 Onchain snake matches with cUSD entry fees and prize-pool settlement on Celo.
 
+- Live worker: <https://snak.timjosh507.workers.dev>
+- Network: Celo mainnet (chain id 42220)
+- Snak contract: [`0x5f134731bd668071a0bcebfd9ddfd243f63ce424`](https://celoscan.io/address/0x5f134731bd668071a0bcebfd9ddfd243f63ce424)
+- Settlement token: cUSD ([`0x765DE816845861e75A25fCA122bb6898B8B1282a`](https://celoscan.io/address/0x765DE816845861e75A25fCA122bb6898B8B1282a))
+
 ## Stack
 
-- Next.js 16 (App Router)
-- React 19
+- Next.js 16 on Cloudflare Workers via OpenNext
+- React 19 + TypeScript
 - Tailwind CSS v4
-- TypeScript
+- wagmi v3 + viem v2 for chain reads/writes
+- Foundry for the arena contracts
 
 ## Develop
 
