@@ -1,5 +1,9 @@
 export const SHARE_HOST = "https://snak.timjosh507.workers.dev";
 
+export function arenaUrl(matchId: bigint | number | string): string {
+  return `${SHARE_HOST}/play?match=${matchId.toString()}`;
+}
+
 export function shareText(stake?: string): string {
   if (!stake) return "I'm in a Snak arena. cUSD on the line. Join → ";
   return `Arena live · ${stake} cUSD stake · join → `;
