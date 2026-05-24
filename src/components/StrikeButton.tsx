@@ -2,12 +2,14 @@
 
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { snakAbi } from "@/lib/abi/snak";
+import { useNowSec } from "@/lib/useNowSec";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
 const COOLDOWN_SEC = 22 * 60 * 60; // Snak.STRIKE_COOLDOWN
 
 export function StrikeButton() {
   const { address, isConnected } = useAccount();
+  const nowSec = useNowSec();
 
   const { data: last } = useReadContract({
     abi: snakAbi,
@@ -21,7 +23,6 @@ export function StrikeButton() {
   const { isLoading: mining, isSuccess } = useWaitForTransactionReceipt({ hash });
 
   const lastTs = typeof last === "bigint" ? Number(last) : 0;
-  const nowSec = Math.floor(Date.now() / 1000);
   const secondsLeft = lastTs === 0 ? 0 : Math.max(0, lastTs + COOLDOWN_SEC - nowSec);
   const onCooldown = secondsLeft > 0;
 
