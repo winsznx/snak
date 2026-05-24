@@ -9,6 +9,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { snakAbi } from "@/lib/abi/snak";
+import { useNowSec } from "@/lib/useNowSec";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
 type MatchTuple = readonly [
@@ -29,6 +30,7 @@ const RESCUE_DELAY_SECONDS = 3 * 24 * 60 * 60;
 export function RescueStakeButton() {
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
+  const nowSec = useNowSec();
 
   const idBn = (() => {
     try {
@@ -74,7 +76,7 @@ export function RescueStakeButton() {
   const forfeited = probes.data?.[2]?.status === "success" ? (probes.data[2].result as boolean) : false;
   const claimed = probes.data?.[3]?.status === "success" ? (probes.data[3].result as boolean) : false;
 
-  const now = BigInt(Math.floor(Date.now() / 1000));
+  const now = BigInt(nowSec);
   const status = tuple?.[6] ?? -1;
   const deadline = tuple?.[3] ?? 0n;
   const stake = tuple?.[1] ?? 0n;
