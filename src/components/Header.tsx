@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ConnectButton } from "./ConnectButton";
+import { NetworkSelector } from "./NetworkSelector";
 
 export function Header({ showWallet = false }: { showWallet?: boolean }) {
   return (
@@ -26,10 +27,7 @@ export function Header({ showWallet = false }: { showWallet?: boolean }) {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="hidden items-center gap-2 rounded-md border border-ash bg-carbon px-3 py-2 md:flex">
-            <span className="h-2 w-2 rounded-full bg-toxic glow-toxic" />
-            <span className="font-mono text-xs text-cloud">Celo</span>
-          </div>
+          <NetworkSelector />
           {showWallet ? <ConnectButton /> : (
             <Link href="/play" className="btn-primary btn-compact">Enter Arena</Link>
           )}
