@@ -1,0 +1,26 @@
+[project]
+name = "snak-stacks"
+description = "Snak — staked snake battle royale on Stacks"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+[contracts.snak]
+path = "snak.clar"
+clarity_version = 3
+epoch = 3.0
+
+[contracts.stx-faucet]
+path = "stx-faucet.clar"
+clarity_version = 3
+epoch = 3.0
+
+[contracts.snak-badges]
+path = "snak-badges.clar"
+clarity_version = 3
+epoch = 3.0
+
+[contracts.snak-strike]
+path = "snak-strike.clar"
+clarity_version = 3
+epoch = 3.0
