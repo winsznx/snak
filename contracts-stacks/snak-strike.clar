@@ -1,4 +1,4 @@
-;; snak-strike — permissionless daily-strike streak counter. Anyone calls
+;; snak-strike - permissionless daily-strike streak counter. Anyone calls
 ;; daily-strike() once per cooldown; the contract counts and emits an event.
 ;; Used by clients to award free entries. No owner gating at all.
 
@@ -15,9 +15,9 @@
         (run (default-to u0 (map-get? strike-run tx-sender)))
         (next-allowed (+ last (var-get cooldown-blocks)))
         (grace-end (+ last (+ (var-get cooldown-blocks) (var-get grace-blocks)))))
-    (asserts! (or (is-eq last u0) (>= block-height next-allowed)) ERR-TOO-SOON)
-    (let ((next-run (if (or (is-eq last u0) (> block-height grace-end)) u1 (+ run u1))))
-      (map-set last-strike tx-sender block-height)
+    (asserts! (or (is-eq last u0) (>= stacks-block-height next-allowed)) ERR-TOO-SOON)
+    (let ((next-run (if (or (is-eq last u0) (> stacks-block-height grace-end)) u1 (+ run u1))))
+      (map-set last-strike tx-sender stacks-block-height)
       (map-set strike-run tx-sender next-run)
       (print { event: "striked", who: tx-sender, run: next-run })
       (ok next-run))))

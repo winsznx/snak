@@ -1,5 +1,5 @@
-;; snak-badges — rank NFTs minted by qualifying season placement. The
-;; contract trusts the player to bring their own rank attestation — no
+;; snak-badges - rank NFTs minted by qualifying season placement. The
+;; contract trusts the player to bring their own rank attestation - no
 ;; whitelist, no owner gating beyond the URI.
 
 (define-non-fungible-token snak-badge uint)

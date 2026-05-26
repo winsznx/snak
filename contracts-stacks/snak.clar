@@ -1,8 +1,6 @@
-;; Snak — Stacks/Clarity port (draft)
+;; Snak - Stacks/Clarity port (draft)
 ;; Arena escrow that locks stake per player and pays the top score on settle.
 ;; Mirrors Snak.sol on the EVM side.
-
-(use-trait ft-trait .sip-010-trait.sip-010-trait)
 
 (define-constant ERR-NOT-OPEN (err u300))
 (define-constant ERR-FULL (err u301))
@@ -34,7 +32,7 @@
 (define-public (create-match (stake uint) (max-players uint) (deadline uint))
   (let ((id (var-get next-match-id)))
     (asserts! (> stake u0) ERR-ZERO-STAKE)
-    (asserts! (> deadline block-height) ERR-DEADLINE-PASSED)
+    (asserts! (> deadline stacks-block-height) ERR-DEADLINE-PASSED)
     ;; TODO: SIP-010 transfer stake into contract
     (map-set matches id
       { creator: tx-sender, stake: stake, max-players: max-players,
@@ -43,9 +41,9 @@
     (var-set next-match-id (+ id u1))
     (ok id)))
 
-;; TODO: join-match — assert capacity, take stake, bump pool
-;; TODO: submit-score — scorer-only writes
-;; TODO: settle-match — pay winner minus treasury cut
+;; TODO: join-match - assert capacity, take stake, bump pool
+;; TODO: submit-score - scorer-only writes
+;; TODO: settle-match - pay winner minus treasury cut
 ;; TODO: forfeit / rescue-stake
 
 (define-read-only (get-match (id uint))
