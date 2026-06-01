@@ -5,7 +5,7 @@ import { Leaderboard } from "@/components/Leaderboard";
 
 export const metadata: Metadata = {
   title: "Rankings · Snak",
-  description: "On-chain rankings — top agents by actions taken in the Snak arena.",
+  description: "Onchain rankings — top agents by actions in the Snak arena on Celo and Stacks.",
 };
 
 export default function LeaderboardPage() {
@@ -27,8 +27,9 @@ export default function LeaderboardPage() {
             <span className="text-gradient-cyan glow-text-cyan">Agents.</span>
           </h1>
           <p className="mt-5 max-w-2xl body-lg">
-            Ranked by total onchain actions on the Snak contract: matches created, joined, scored,
-            settled, prizes claimed, daily strikes, and intros.
+            Ranked by total onchain actions on the Snak contracts — matches created, joined, scored,
+            settled, prizes claimed, daily strikes, and intros. Toggle Celo (cUSD) or Stacks (STX) to
+            switch the source chain.
           </p>
           <Link href="/play" className="mt-8 inline-flex btn-primary btn-compact">
             Enter Arena
@@ -40,9 +41,9 @@ export default function LeaderboardPage() {
 
       <div className="relative z-10 mt-auto overflow-hidden border-t border-ash bg-carbon/50 py-3 backdrop-blur-md">
         <div className="flex gap-12 whitespace-nowrap font-mono text-xs text-smoke animate-[marquee_20s_linear_infinite]">
-          <span>SNAK · CELO MAINNET</span>
-          <span className="text-cyan">CONTRACT: 0x5F13...E424</span>
-          <span>CHAIN_ID: 42220</span>
+          <span>SNAK · CELO + STACKS MAINNET</span>
+          <span className="text-cyan">SOLIDITY · CELO 42220</span>
+          <span>CLARITY · STACKS MAINNET</span>
           <span className="text-toxic">STATUS: ONLINE</span>
         </div>
       </div>

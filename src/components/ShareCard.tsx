@@ -24,7 +24,7 @@ export function ShareCard({ matchId, stake, url, className = "" }: Props) {
         </span>
         {stake && (
           <span className="rounded-full border border-cyan/30 bg-void px-2.5 py-1 text-[11px] uppercase tracking-wide font-mono text-cyan">
-            {stake} cUSD
+            {stake} stake
           </span>
         )}
       </div>

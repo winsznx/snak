@@ -5,8 +5,8 @@ export function arenaUrl(matchId: bigint | number | string): string {
 }
 
 export function shareText(stake?: string): string {
-  if (!stake) return "I'm in a Snak arena. cUSD on the line. Join → ";
-  return `Arena live · ${stake} cUSD stake · join → `;
+  if (!stake) return "I'm in a Snak arena — onchain on Celo + Stacks. Join → ";
+  return `Arena live · ${stake} stake (cUSD or STX) · join → `;
 }
 
 export const whatsAppLink = (text: string, url: string) =>

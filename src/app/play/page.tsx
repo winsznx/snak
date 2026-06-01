@@ -83,7 +83,7 @@ export default function Play() {
               
               <div className="mt-6 pt-6 border-t border-ash w-full flex justify-between items-center text-xs font-mono">
                 <span className="text-smoke">FEE DEBIT</span>
-                <span className="text-cyan">$0.10 cUSD</span>
+                <span className="text-cyan">$0.10 (CELO · STX)</span>
               </div>
             </div>
           </div>

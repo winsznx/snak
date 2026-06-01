@@ -23,7 +23,7 @@ export default function Home() {
           </h1>
           <p className="mt-6 max-w-2xl body-lg">
             A high-stakes onchain snake arena. Host matches, join rival players, survive the board,
-            and extract the cUSD prize pool when the match settles.
+            and extract the prize pool — staked in cUSD on Celo or STX on Stacks.
           </p>
           <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-center">
             <Link href="/play" className="btn-primary">
@@ -33,7 +33,7 @@ export default function Home() {
               Enter Arena
             </Link>
             <div className="font-mono text-xs uppercase tracking-wider text-silver">
-              <div>Entry: $0.10 cUSD</div>
+              <div>Entry: $0.10 (cUSD · STX)</div>
               <div>Prize: dynamic pool</div>
             </div>
           </div>
@@ -46,7 +46,7 @@ export default function Home() {
         <div className="flex gap-12 whitespace-nowrap font-mono text-xs text-smoke animate-[marquee_20s_linear_infinite]">
           <span>LATEST_KILL: 0X7F...8A2 ELIMINATED 0X2B...1F9</span>
           <span className="text-cyan">RANK_1: 0X4A...9E0 (MASS: 12,450)</span>
-          <span>PRIZE_POOL: $42.50 cUSD</span>
+          <span>PRIZE_POOL: $42.50 (CELO+STACKS)</span>
           <span className="text-toxic">AGENT_STATUS: ONLINE</span>
         </div>
       </div>
