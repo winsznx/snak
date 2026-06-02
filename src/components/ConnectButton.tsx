@@ -3,7 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { useChainKind } from "@/chain/ChainProvider";
-import { connectStacks, disconnectStacks, readStacksSession } from "@/chain/stacksSession";
+import {
+  connectStacks,
+  disconnectStacks,
+  isStacksWalletAvailable,
+  readStacksSession,
+} from "@/chain/stacksSession";
 
 const short = (a: string) => `${a.slice(0, 5)}…${a.slice(-3)}`;
 
@@ -14,17 +19,17 @@ export function ConnectButton() {
   const { disconnect } = useDisconnect();
   const [open, setOpen] = useState(false);
   const [stxAddr, setStxAddr] = useState<string | null>(null);
+  const [stxAvail, setStxAvail] = useState<boolean | null>(null);
+  const [stxBusy, setStxBusy] = useState(false);
+  const [stxInstallOpen, setStxInstallOpen] = useState(false);
 
   const baseClass =
     "px-4 py-2 rounded border border-cyan/40 bg-carbon font-mono text-xs uppercase tracking-widest text-cyan hover:border-cyan hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all";
 
   useEffect(() => {
     if (kind !== "stacks") return;
-    const t = window.setTimeout(() => {
-      const snap = readStacksSession();
-      setStxAddr(snap.address);
-    }, 0);
-    return () => window.clearTimeout(t);
+    setStxAddr(readStacksSession().address);
+    isStacksWalletAvailable().then(setStxAvail);
   }, [kind]);
 
   const isStacksConnected = useMemo(() => kind === "stacks" && !!stxAddr, [kind, stxAddr]);
@@ -34,8 +39,8 @@ export function ConnectButton() {
       return (
         <button
           type="button"
-          onClick={() => {
-            disconnectStacks();
+          onClick={async () => {
+            await disconnectStacks();
             setStxAddr(null);
           }}
           className={baseClass}
@@ -46,21 +51,69 @@ export function ConnectButton() {
         </button>
       );
     }
+
+    if (stxAvail === false) {
+      return (
+        <div className="relative">
+          <button
+            type="button"
+            className={baseClass}
+            onClick={() => setStxInstallOpen((v) => !v)}
+          >
+            ▸ INSTALL_RIG
+          </button>
+          {stxInstallOpen && (
+            <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded border border-cyan/40 bg-carbon p-3 shadow-[0_0_30px_rgba(0,229,255,0.2)] space-y-2 text-xs font-mono">
+              <p className="text-silver">Need Leather or Xverse to sign Stacks transactions.</p>
+              <a
+                href="https://leather.io/install-extension"
+                target="_blank"
+                rel="noreferrer"
+                className="block rounded border border-cyan/40 px-3 py-2 text-snow hover:bg-graphite"
+              >
+                INSTALL_LEATHER ↗
+              </a>
+              <a
+                href="https://www.xverse.app/download"
+                target="_blank"
+                rel="noreferrer"
+                className="block rounded border border-cyan/40 px-3 py-2 text-snow hover:bg-graphite"
+              >
+                INSTALL_XVERSE ↗
+              </a>
+              <button
+                type="button"
+                onClick={async () => {
+                  const next = await isStacksWalletAvailable();
+                  setStxAvail(next);
+                  if (next) setStxInstallOpen(false);
+                }}
+                className="block w-full rounded border border-cyan/40 bg-graphite px-3 py-2 text-cyan"
+              >
+                RETRY
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     return (
       <button
         type="button"
-        disabled={isPending}
+        disabled={isPending || stxBusy}
         className={baseClass}
         onClick={async () => {
+          setStxBusy(true);
           try {
-            await connectStacks();
+            const s = await connectStacks();
+            setStxAddr(s.address);
           } finally {
-            const snap = readStacksSession();
-            setStxAddr(snap.address);
+            setStxBusy(false);
           }
         }}
       >
-        ▸ STACKS_RIG
+        {stxBusy ? "OPENING…" : "▸ STACKS_RIG"}
       </button>
     );
   }
