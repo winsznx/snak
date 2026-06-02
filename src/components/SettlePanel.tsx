@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { useNowSec } from "@/lib/useNowSec";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
@@ -16,6 +18,9 @@ import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
  * if they happen to be the winner.
  */
 export function SettlePanel() {
+  const { kind } = useChainKind();
+  if (kind === "stacks") return <CeloOnlyNotice feature="Settle" />;
+
   const { address } = useAccount();
   const [matchInput, setMatchInput] = useState<string>("");
   const nowSec = useNowSec();

@@ -7,6 +7,8 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
@@ -30,6 +32,9 @@ type MatchTuple = readonly [
  * Once anyone joins, the match is locked in — there's no scrubbing it.
  */
 export function CancelMatchButton() {
+  const { kind } = useChainKind();
+  if (kind === "stacks") return <CeloOnlyNotice feature="Cancel Match" />;
+
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
 

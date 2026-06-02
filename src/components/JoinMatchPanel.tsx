@@ -8,6 +8,8 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { CUSD_ADDRESS, SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 import { useNowSec } from "@/lib/useNowSec";
@@ -21,6 +23,9 @@ import { useNowSec } from "@/lib/useNowSec";
  * status/full/deadline, and walk an allowance-aware approve + joinMatch.
  */
 export function JoinMatchPanel() {
+  const { kind } = useChainKind();
+  if (kind === "stacks") return <CeloOnlyNotice feature="Join Match" />;
+
   const { address, isConnected } = useAccount();
   const [matchInput, setMatchInput] = useState<string>("");
   const [phase, setPhase] = useState<"idle" | "approving" | "joining">("idle");

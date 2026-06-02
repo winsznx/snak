@@ -8,6 +8,8 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 import { useNowSec } from "@/lib/useNowSec";
@@ -31,6 +33,9 @@ type MatchTuple = readonly [
  * hasn't passed.
  */
 export function ForfeitMatchButton() {
+  const { kind } = useChainKind();
+  if (kind === "stacks") return <CeloOnlyNotice feature="Forfeit Match" />;
+
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
   const nowSec = useNowSec();

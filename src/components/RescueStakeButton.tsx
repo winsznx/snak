@@ -8,6 +8,8 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { useNowSec } from "@/lib/useNowSec";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
@@ -28,6 +30,9 @@ const RESCUE_DELAY_SECONDS = 3 * 24 * 60 * 60;
 
 /** Pull your stake back from a match that never settled. */
 export function RescueStakeButton() {
+  const { kind } = useChainKind();
+  if (kind === "stacks") return <CeloOnlyNotice feature="Rescue Stake" />;
+
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
   const nowSec = useNowSec();

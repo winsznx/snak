@@ -8,6 +8,14 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { connectStacks, readStacksSession } from "@/chain/stacksSession";
+import { useStacksWrite } from "@/chain/useStacksWrite";
+import {
+  SNAK_STX_CONTRACT,
+  SNAK_STX_CREATE_MATCH_FN,
+  SNAK_STX_DEPLOYER,
+} from "@/chain/stacksContracts";
 import { snakAbi } from "@/lib/abi/snak";
 import { CUSD_ADDRESS, SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
@@ -26,11 +34,13 @@ const DURATION_OPTIONS = [
  * matches at the same stake are one-tx).
  */
 export function CreateMatchPanel() {
+  const { kind } = useChainKind();
   const { address, isConnected } = useAccount();
   const [stake, setStake] = useState<number>(1);
   const [maxPlayers, setMaxPlayers] = useState<number>(6);
   const [durationSec, setDurationSec] = useState<number>(60 * 60);
   const [phase, setPhase] = useState<"idle" | "approving" | "creating">("idle");
+  const stx = useStacksWrite();
 
   const stakeWei = parseUnits(stake.toString(), 18);
 
@@ -45,38 +55,75 @@ export function CreateMatchPanel() {
   const { writeContract, data: hash, reset, isPending } = useWriteContract();
   const { isLoading: mining } = useWaitForTransactionReceipt({ hash });
 
-  const needsApprove = !allowance || (allowance as bigint) < stakeWei;
-  const enabled = isConnected && isSnakDeployed && !mining && !isPending;
+  const needsApprove = kind === "celo" && (!allowance || (allowance as bigint) < stakeWei);
+  const enabledCelo = isConnected && isSnakDeployed && !mining && !isPending;
+  const enabledStacks = !stx.pending;
+  const enabled = kind === "celo" ? enabledCelo : enabledStacks;
 
-  function submit() {
-    if (!isConnected) return;
-    if (needsApprove) {
-      setPhase("approving");
+  async function submit() {
+    if (kind === "celo") {
+      if (!isConnected) return;
+      if (needsApprove) {
+        setPhase("approving");
+        writeContract({
+          abi: erc20Abi,
+          address: CUSD_ADDRESS,
+          functionName: "approve",
+          args: [SNAK_ADDRESS, stakeWei],
+        });
+        return;
+      }
+      setPhase("creating");
+      const deadline = BigInt(Math.floor(Date.now() / 1000) + durationSec);
       writeContract({
-        abi: erc20Abi,
-        address: CUSD_ADDRESS,
-        functionName: "approve",
-        args: [SNAK_ADDRESS, stakeWei],
+        abi: snakAbi,
+        address: SNAK_ADDRESS,
+        functionName: "createMatch",
+        args: [stakeWei, maxPlayers, deadline],
       });
       return;
     }
-    setPhase("creating");
-    const deadline = BigInt(Math.floor(Date.now() / 1000) + durationSec);
-    writeContract({
-      abi: snakAbi,
-      address: SNAK_ADDRESS,
-      functionName: "createMatch",
-      args: [stakeWei, maxPlayers, deadline],
+
+    let s = readStacksSession();
+    if (!s.isConnected) {
+      s = await connectStacks();
+      if (!s.isConnected) return;
+    }
+    // Stacks deadline is a future block height — fetch tip from Hiro.
+    let deadlineBlocks = 0n;
+    try {
+      const info = await fetch("https://api.hiro.so/v2/info").then((r) => r.json());
+      const tip = BigInt(info?.stacks_tip_height ?? info?.burn_block_height ?? 0);
+      deadlineBlocks = tip + BigInt(Math.max(1, Math.floor(durationSec / 600))); // ~600s per stacks block
+    } catch {
+      return;
+    }
+    const stakeMicroStx = BigInt(Math.floor(stake * 1_000_000));
+    await stx.call({
+      contractAddress: SNAK_STX_DEPLOYER,
+      contractName: SNAK_STX_CONTRACT,
+      functionName: SNAK_STX_CREATE_MATCH_FN,
+      args: [
+        { type: "uint", value: stakeMicroStx },
+        { type: "uint", value: BigInt(maxPlayers) },
+        { type: "uint", value: deadlineBlocks },
+      ],
     });
   }
 
-  const cta = mining
+  const ctaCelo = mining
     ? phase === "approving"
       ? "Approving stake…"
       : "Spinning up arena…"
     : needsApprove
       ? `Approve $${stake} cUSD`
       : "Open arena ▸";
+  const ctaStacks = stx.pending
+    ? "Sign on Stacks…"
+    : stx.txid
+      ? "Arena opened ✓"
+      : `Open arena (${stake} STX) ▸`;
+  const cta = kind === "celo" ? ctaCelo : ctaStacks;
 
   return (
     <div className="bg-carbon/80 border border-cyan/30 rounded-lg p-5 space-y-5 text-snow font-mono">

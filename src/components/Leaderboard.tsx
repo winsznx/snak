@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useConfig } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
 import { useQuery } from "@tanstack/react-query";
 import { celo } from "wagmi/chains";
+import { useChainKind } from "@/chain/ChainProvider";
 import { snakAbi } from "@/lib/abi/snak";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 import { fetchActorAggregates, formatCusd, shortAddr, type ActorEvent } from "@/lib/leaderboard";
@@ -49,7 +50,17 @@ type Row = {
 
 export function Leaderboard() {
   const config = useConfig();
-  const [chain, setChain] = useState<ChainTab>("celo");
+  const { kind, setKind } = useChainKind();
+  const [chain, setChain] = useState<ChainTab>(kind);
+
+  // Mirror the global chain toggle so flipping either control switches both.
+  useEffect(() => {
+    setChain(kind);
+  }, [kind]);
+  const handleChainChange = (next: ChainTab) => {
+    setChain(next);
+    setKind(next);
+  };
 
   const celoQuery = useQuery({
     queryKey: ["snak-leaderboard-celo", celo.id, SNAK_ADDRESS],
@@ -114,7 +125,7 @@ export function Leaderboard() {
 
   return (
     <div className="relative">
-      <ChainToggle chain={chain} onChange={setChain} />
+      <ChainToggle chain={chain} onChange={handleChainChange} />
 
       <div className="mt-6">
         <StatStrip

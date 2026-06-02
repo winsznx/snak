@@ -7,6 +7,8 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
@@ -38,6 +40,9 @@ const EXTEND_OPTIONS = [
  * constraint is always satisfied (matching the contract's own check).
  */
 export function ExtendDeadlinePanel() {
+  const { kind } = useChainKind();
+  if (kind === "stacks") return <CeloOnlyNotice feature="Extend Deadline" />;
+
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
   const [extra, setExtra] = useState<number>(60 * 60);

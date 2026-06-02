@@ -8,6 +8,8 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { CUSD_ADDRESS, SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
@@ -31,6 +33,9 @@ type MatchTuple = readonly [
  * status before approving + writing.
  */
 export function BoostPrizePanel() {
+  const { kind } = useChainKind();
+  if (kind === "stacks") return <CeloOnlyNotice feature="Boost Prize" />;
+
   const { address, isConnected } = useAccount();
   const [matchIdRaw, setMatchIdRaw] = useState("");
   const [amount, setAmount] = useState<number>(1);
