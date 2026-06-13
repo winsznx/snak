@@ -77,9 +77,9 @@ export default function Play() {
               <h2 className="text-4xl font-display font-bold text-snow mb-2 tracking-[0.1em] uppercase">Initialize</h2>
               <p className="text-silver font-body mb-8 text-sm">Deploy snake into Sector 7G. Consume data nodes to expand mass. Avoid hostiles.</p>
               
-              <button className="btn-primary w-full py-4 text-xl">
+              <a href="#host-arena" className="btn-primary w-full py-4 text-xl block text-center">
                 START_PROTOCOL
-              </button>
+              </a>
               
               <div className="mt-6 pt-6 border-t border-ash w-full flex justify-between items-center text-xs font-mono">
                 <span className="text-smoke">FEE DEBIT</span>
@@ -98,7 +98,7 @@ export default function Play() {
       </div>
 
       {/* Host & Join panels — distinct on-chain entry paths */}
-      <section className="relative z-10 w-full max-w-5xl mt-10 grid md:grid-cols-2 gap-5">
+      <section id="host-arena" className="relative z-10 w-full max-w-5xl mt-10 grid md:grid-cols-2 gap-5 scroll-mt-32">
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-cyan">▸ HOST_ARENA</h3>
