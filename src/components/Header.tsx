@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ConnectButton } from "./ConnectButton";
+import { NavDrawer } from "./NavDrawer";
 import { NetworkSelector } from "./NetworkSelector";
 
 export function Header({ showWallet = false }: { showWallet?: boolean }) {
@@ -31,6 +32,7 @@ export function Header({ showWallet = false }: { showWallet?: boolean }) {
           {showWallet ? <ConnectButton /> : (
             <Link href="/play" className="btn-primary btn-compact">Enter Arena</Link>
           )}
+          <NavDrawer />
         </div>
       </div>
     </header>
