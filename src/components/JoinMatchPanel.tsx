@@ -24,7 +24,6 @@ import { useNowSec } from "@/lib/useNowSec";
  */
 export function JoinMatchPanel() {
   const { kind } = useChainKind();
-  if (kind === "stacks") return <CeloOnlyNotice feature="Join Match" />;
 
   const { address, isConnected } = useAccount();
   const [matchInput, setMatchInput] = useState<string>("");
@@ -122,6 +121,10 @@ export function JoinMatchPanel() {
     !isExpired &&
     !mining &&
     !isPending;
+
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="Join Match" />;
+  }
 
   return (
     <div className="bg-carbon/80 border border-magenta/30 rounded-lg p-5 space-y-4 text-snow font-mono">
