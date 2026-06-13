@@ -10,6 +10,8 @@ import {
 } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
 import { useQuery } from "@tanstack/react-query";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
@@ -35,6 +37,7 @@ const STATUS_LABELS = ["OPEN", "LOCKED", "SETTLED", "CANCELLED"] as const;
  * history including which ones are claimable and which already settled.
  */
 export function YourMatches() {
+  const { kind } = useChainKind();
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const config = useConfig();
@@ -42,6 +45,7 @@ export function YourMatches() {
   const idsQuery = useQuery({
     queryKey: ["snak-your-matches", chainId, address],
     queryFn: async (): Promise<bigint[]> => {
+      if (kind !== "celo") return [];
       if (!address) return [];
       const client = getPublicClient(config, { chainId });
       if (!client) return [];
@@ -69,7 +73,7 @@ export function YourMatches() {
       }
       return out;
     },
-    enabled: isConnected && isSnakDeployed && !!address,
+    enabled: kind === "celo" && isConnected && isSnakDeployed && !!address,
     refetchInterval: 60_000,
   });
 
@@ -82,7 +86,10 @@ export function YourMatches() {
       functionName: "matches" as const,
       args: [id] as const,
     })),
-    query: { enabled: ids.length > 0, refetchInterval: 30_000 },
+    query: {
+      enabled: kind === "celo" && ids.length > 0,
+      refetchInterval: 30_000,
+    },
   });
 
   const rows = useMemo(() => {
@@ -111,6 +118,9 @@ export function YourMatches() {
     }>;
   }, [ids, results]);
 
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="Your match history" />;
+  }
   if (!isSnakDeployed) {
     return (
       <div className="font-mono text-[11px] text-magenta uppercase tracking-widest">
