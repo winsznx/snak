@@ -67,19 +67,44 @@ export function StrikeButton() {
       setStxConnected(s.isConnected);
       if (!s.isConnected) return;
     }
-    await stx.call({
+    const res = await stx.call({
       contractAddress: SNAK_STX_DEPLOYER,
       contractName: SNAK_STX_STRIKE_CONTRACT,
       functionName: SNAK_STX_DAILY_STRIKE_FN,
       args: [],
     });
+    if (res) {
+      try {
+        window.localStorage.setItem("snak.strike.lastStx", String(Date.now()));
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+
+  // Surface a local cooldown after a successful Stacks strike so the user
+  // doesn't fire the wallet popup repeatedly. The contract enforces the
+  // real cooldown server-side; this just stops the optimistic UI from
+  // letting the user spam through it.
+  let stacksCooldownLabel: string | null = null;
+  if (typeof window !== "undefined" && kind === "stacks") {
+    try {
+      const raw = window.localStorage.getItem("snak.strike.lastStx");
+      if (raw) {
+        const last = Number(raw);
+        const remaining = COOLDOWN_SEC - Math.floor((Date.now() - last) / 1000);
+        if (remaining > 0) stacksCooldownLabel = fmt(remaining);
+      }
+    } catch {
+      /* ignore */
+    }
   }
 
   const ctaCelo = mining
     ? "striking…"
     : isPending
       ? "sign…"
-      : isSuccess
+      : isSuccess && kind === "celo"
         ? "struck ✓"
         : onCooldown
           ? fmt(secondsLeft)
@@ -91,9 +116,11 @@ export function StrikeButton() {
     ? "sign in wallet…"
     : stx.txid
       ? "struck on stacks ✓"
-      : stxConnected
-        ? "daily strike ▸"
-        : "connect stacks ▸";
+      : stacksCooldownLabel
+        ? stacksCooldownLabel
+        : stxConnected
+          ? "daily strike ▸"
+          : "connect stacks ▸";
 
   const cta = kind === "celo" ? ctaCelo : ctaStacks;
 
