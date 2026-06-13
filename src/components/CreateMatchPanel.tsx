@@ -99,6 +99,7 @@ export function CreateMatchPanel() {
       return;
     }
     const stakeMicroStx = BigInt(Math.floor(stake * 1_000_000));
+    const stxFrom = s.address;
     await stx.call({
       contractAddress: SNAK_STX_DEPLOYER,
       contractName: SNAK_STX_CONTRACT,
@@ -108,6 +109,12 @@ export function CreateMatchPanel() {
         { type: "uint", value: BigInt(maxPlayers) },
         { type: "uint", value: deadlineBlocks },
       ],
+      // Sign with deny + an explicit microStx post-condition so the wallet
+      // refuses if create-match tries to debit more than the chosen stake.
+      postConditionMode: "deny",
+      postConditions: stxFrom
+        ? [{ type: "stx-eq", from: stxFrom, microStx: stakeMicroStx }]
+        : undefined,
     });
   }
 
