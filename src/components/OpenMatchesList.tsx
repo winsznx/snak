@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { formatUnits } from "viem";
+import { erc20Abi, formatUnits } from "viem";
 import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
+import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
 import { useNowSec } from "@/lib/useNowSec";
-import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
+import { CUSD_ADDRESS, SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
 const WINDOW = 20; // pull at most the latest 20 matches
 
@@ -29,14 +31,27 @@ type MatchTuple = readonly [
  * a match id into the manual JoinMatchPanel.
  */
 export function OpenMatchesList() {
-  const { isConnected } = useAccount();
+  const { kind } = useChainKind();
+  const { address, isConnected } = useAccount();
   const nowSec = useNowSec();
+
+  // Pre-read cUSD allowance so the inline JOIN button can branch to an
+  // approve-first call when the wallet hasn't pre-authorized the snak escrow.
+  // Without this the click signs joinMatch directly and the tx reverts with
+  // SafeERC20FailedOperation.
+  const { data: allowance } = useReadContract({
+    abi: erc20Abi,
+    address: CUSD_ADDRESS,
+    functionName: "allowance",
+    args: address ? [address, SNAK_ADDRESS] : undefined,
+    query: { enabled: kind === "celo" && isConnected && isSnakDeployed && !!address },
+  });
 
   const { data: nextIdRaw } = useReadContract({
     abi: snakAbi,
     address: SNAK_ADDRESS,
     functionName: "nextMatchId",
-    query: { enabled: isSnakDeployed, refetchInterval: 30_000 },
+    query: { enabled: kind === "celo" && isSnakDeployed, refetchInterval: 30_000 },
   });
 
   const nextId = typeof nextIdRaw === "bigint" ? nextIdRaw : 0n;
@@ -56,7 +71,10 @@ export function OpenMatchesList() {
 
   const { data: results, isLoading } = useReadContracts({
     contracts,
-    query: { enabled: isSnakDeployed && count > 0, refetchInterval: 30_000 },
+    query: {
+      enabled: kind === "celo" && isSnakDeployed && count > 0,
+      refetchInterval: 30_000,
+    },
   });
 
   const { writeContract, isPending } = useWriteContract();
@@ -94,6 +112,9 @@ export function OpenMatchesList() {
     }>;
   }, [nowSec, results, startId]);
 
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="The open-matches list" />;
+  }
   if (!isSnakDeployed) {
     return (
       <div className="font-mono text-[11px] text-magenta uppercase tracking-widest">
@@ -170,17 +191,31 @@ export function OpenMatchesList() {
                 <button
                   type="button"
                   disabled={!isConnected || isPending}
-                  onClick={() =>
+                  onClick={() => {
+                    const need = !allowance || (allowance as bigint) < m.stake;
+                    if (need) {
+                      writeContract({
+                        abi: erc20Abi,
+                        address: CUSD_ADDRESS,
+                        functionName: "approve",
+                        args: [SNAK_ADDRESS, m.stake],
+                      });
+                      return;
+                    }
                     writeContract({
                       abi: snakAbi,
                       address: SNAK_ADDRESS,
                       functionName: "joinMatch",
                       args: [m.id],
-                    })
-                  }
+                    });
+                  }}
                   className="px-3 py-1 rounded border border-cyan text-cyan hover:bg-cyan/10 disabled:opacity-40 disabled:cursor-not-allowed uppercase tracking-widest text-[10px]"
                 >
-                  {isPending ? "SIGN…" : "JOIN ▸"}
+                  {isPending
+                    ? "SIGN…"
+                    : !allowance || (allowance as bigint) < m.stake
+                      ? "APPROVE ▸"
+                      : "JOIN ▸"}
                 </button>
               </div>
             </li>
