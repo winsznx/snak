@@ -31,7 +31,6 @@ const RESCUE_DELAY_SECONDS = 3 * 24 * 60 * 60;
 /** Pull your stake back from a match that never settled. */
 export function RescueStakeButton() {
   const { kind } = useChainKind();
-  if (kind === "stacks") return <CeloOnlyNotice feature="Rescue Stake" />;
 
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
@@ -122,6 +121,10 @@ export function RescueStakeButton() {
     }
     return null;
   })();
+
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="Rescue Stake" />;
+  }
 
   return (
     <div className="bg-carbon/80 border border-cyan/30 rounded-lg p-5 space-y-4 text-snow font-mono">
