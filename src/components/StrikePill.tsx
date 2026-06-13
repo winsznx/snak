@@ -1,14 +1,19 @@
 "use client";
 
 import { useAccount, useReadContract } from "wagmi";
+import { useChainKind } from "@/chain/ChainProvider";
 import { snakAbi } from "@/lib/abi/snak";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
 /**
  * Reads the player's current strikeRun + freeEntries from the contract.
- * Used in the play HUD so the player can see whether they have a free entry available.
+ * Used in the play HUD so the player can see whether they have a free entry
+ * available. The deployed Stacks contract doesn't carry an equivalent state,
+ * so on Stacks the pill renders inert rather than polling Celo for state the
+ * user can't use.
  */
 export function StrikePill() {
+  const { kind } = useChainKind();
   const { address, isConnected } = useAccount();
 
   const { data: run } = useReadContract({
@@ -16,7 +21,10 @@ export function StrikePill() {
     address: SNAK_ADDRESS,
     functionName: "strikeRun",
     args: address ? [address] : undefined,
-    query: { enabled: isConnected && isSnakDeployed && !!address, refetchInterval: 30_000 },
+    query: {
+      enabled: kind === "celo" && isConnected && isSnakDeployed && !!address,
+      refetchInterval: 30_000,
+    },
   });
 
   const { data: free } = useReadContract({
@@ -24,7 +32,10 @@ export function StrikePill() {
     address: SNAK_ADDRESS,
     functionName: "freeEntries",
     args: address ? [address] : undefined,
-    query: { enabled: isConnected && isSnakDeployed && !!address, refetchInterval: 30_000 },
+    query: {
+      enabled: kind === "celo" && isConnected && isSnakDeployed && !!address,
+      refetchInterval: 30_000,
+    },
   });
 
   const r = run !== undefined ? Number(run) : 0;
