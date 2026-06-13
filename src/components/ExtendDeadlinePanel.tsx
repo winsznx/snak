@@ -41,7 +41,6 @@ const EXTEND_OPTIONS = [
  */
 export function ExtendDeadlinePanel() {
   const { kind } = useChainKind();
-  if (kind === "stacks") return <CeloOnlyNotice feature="Extend Deadline" />;
 
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
@@ -118,6 +117,10 @@ export function ExtendDeadlinePanel() {
           minute: "2-digit",
         })
       : "—";
+
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="Extend Deadline" />;
+  }
 
   return (
     <div className="bg-carbon/80 border border-cyan/30 rounded-lg p-5 space-y-4 text-snow font-mono">
