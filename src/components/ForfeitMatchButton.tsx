@@ -34,7 +34,6 @@ type MatchTuple = readonly [
  */
 export function ForfeitMatchButton() {
   const { kind } = useChainKind();
-  if (kind === "stacks") return <CeloOnlyNotice feature="Forfeit Match" />;
 
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
@@ -116,6 +115,10 @@ export function ForfeitMatchButton() {
     if (!beforeDeadline) return "deadline passed — too late to forfeit";
     return null;
   })();
+
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="Forfeit Match" />;
+  }
 
   return (
     <div className="bg-carbon/80 border border-magenta/30 rounded-lg p-5 space-y-4 text-snow font-mono">
