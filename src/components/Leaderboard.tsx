@@ -50,17 +50,16 @@ type Row = {
 
 export function Leaderboard() {
   const config = useConfig();
-  const { kind, setKind } = useChainKind();
+  const { kind } = useChainKind();
   const [chain, setChain] = useState<ChainTab>(kind);
 
-  // Mirror the global chain toggle so flipping either control switches both.
+  // The HEADER NetworkSelector is the single source of truth for the global
+  // chain kind. The in-page tab follows when the header flips, but flipping
+  // the in-page tab is local-only — it doesn't side-effect the global state
+  // and silently switch contracts on every other route.
   useEffect(() => {
     setChain(kind);
   }, [kind]);
-  const handleChainChange = (next: ChainTab) => {
-    setChain(next);
-    setKind(next);
-  };
 
   const celoQuery = useQuery({
     queryKey: ["snak-leaderboard-celo", celo.id, SNAK_ADDRESS],
@@ -125,7 +124,7 @@ export function Leaderboard() {
 
   return (
     <div className="relative">
-      <ChainToggle chain={chain} onChange={handleChainChange} />
+      <ChainToggle chain={chain} onChange={setChain} />
 
       <div className="mt-6">
         <StatStrip
