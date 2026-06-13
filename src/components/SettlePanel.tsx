@@ -19,7 +19,6 @@ import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
  */
 export function SettlePanel() {
   const { kind } = useChainKind();
-  if (kind === "stacks") return <CeloOnlyNotice feature="Settle" />;
 
   const { address } = useAccount();
   const [matchInput, setMatchInput] = useState<string>("");
@@ -87,6 +86,10 @@ export function SettlePanel() {
   }
 
   const statusLabel = ["OPEN", "LOCKED", "SETTLED", "CANCELLED"][status] ?? "—";
+
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="Settle" />;
+  }
 
   return (
     <div className="bg-carbon/80 border border-toxic/30 rounded-lg p-5 space-y-4 text-snow font-mono">
