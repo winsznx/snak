@@ -34,7 +34,6 @@ type MatchTuple = readonly [
  */
 export function BoostPrizePanel() {
   const { kind } = useChainKind();
-  if (kind === "stacks") return <CeloOnlyNotice feature="Boost Prize" />;
 
   const { address, isConnected } = useAccount();
   const [matchIdRaw, setMatchIdRaw] = useState("");
@@ -122,6 +121,10 @@ export function BoostPrizePanel() {
       : needsApprove
         ? `Approve $${amount} cUSD`
         : `Boost $${amount} →`;
+
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="Boost Prize" />;
+  }
 
   return (
     <div className="bg-carbon/80 border border-magenta/30 rounded-lg p-5 text-snow font-mono space-y-4">
