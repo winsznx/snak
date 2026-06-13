@@ -33,7 +33,6 @@ type MatchTuple = readonly [
  */
 export function CancelMatchButton() {
   const { kind } = useChainKind();
-  if (kind === "stacks") return <CeloOnlyNotice feature="Cancel Match" />;
 
   const { address, isConnected } = useAccount();
   const [matchId, setMatchId] = useState("");
@@ -90,6 +89,10 @@ export function CancelMatchButton() {
     if (joined > 0) return `${joined} player${joined === 1 ? "" : "s"} already in — can't cancel`;
     return null;
   })();
+
+  if (kind === "stacks") {
+    return <CeloOnlyNotice feature="Cancel Match" />;
+  }
 
   return (
     <div className="bg-carbon/80 border border-silver/30 rounded-lg p-5 space-y-4 text-snow font-mono">
