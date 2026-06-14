@@ -3,11 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { useChainKind } from "@/chain/ChainProvider";
+import { useStacksSession } from "@/chain/useStacksSession";
 import {
   connectStacks,
   disconnectStacks,
   isStacksWalletAvailable,
-  readStacksSession,
 } from "@/chain/stacksSession";
 
 const short = (a: string) => `${a.slice(0, 5)}…${a.slice(-3)}`;
@@ -18,17 +18,16 @@ export function ConnectButton() {
   const { connectors, connect, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const [open, setOpen] = useState(false);
-  const [stxAddr, setStxAddr] = useState<string | null>(null);
   const [stxAvail, setStxAvail] = useState<boolean | null>(null);
   const [stxBusy, setStxBusy] = useState(false);
   const [stxInstallOpen, setStxInstallOpen] = useState(false);
+  const { address: stxAddr } = useStacksSession();
 
   const baseClass =
     "px-4 py-2 rounded border border-cyan/40 bg-carbon font-mono text-xs uppercase tracking-widest text-cyan hover:border-cyan hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all";
 
   useEffect(() => {
     if (kind !== "stacks") return;
-    setStxAddr(readStacksSession().address);
     isStacksWalletAvailable().then(setStxAvail);
   }, [kind]);
 
@@ -41,7 +40,6 @@ export function ConnectButton() {
           type="button"
           onClick={async () => {
             await disconnectStacks();
-            setStxAddr(null);
           }}
           className={baseClass}
           title="Disconnect"
@@ -106,8 +104,7 @@ export function ConnectButton() {
         onClick={async () => {
           setStxBusy(true);
           try {
-            const s = await connectStacks();
-            setStxAddr(s.address);
+            await connectStacks();
           } finally {
             setStxBusy(false);
           }
