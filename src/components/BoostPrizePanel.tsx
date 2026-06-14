@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { erc20Abi, formatUnits, parseUnits } from "viem";
 import {
   useAccount,
@@ -63,7 +63,7 @@ export function BoostPrizePanel() {
     },
   });
 
-  const { data: allowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     abi: erc20Abi,
     address: CUSD_ADDRESS,
     functionName: "allowance",
@@ -75,7 +75,19 @@ export function BoostPrizePanel() {
   });
 
   const { writeContract, data: hash, isPending, reset } = useWriteContract();
-  const { isLoading: mining } = useWaitForTransactionReceipt({ hash });
+  const { isLoading: mining, isSuccess: confirmed } = useWaitForTransactionReceipt({
+    hash,
+    query: { enabled: !!hash },
+  });
+
+  // Refetch allowance after the approve receipt confirms so the next click
+  // actually fires boostPrize instead of sending another approve.
+  useEffect(() => {
+    if (confirmed && phase === "approving") {
+      void refetchAllowance();
+      setPhase("idle");
+    }
+  }, [confirmed, phase, refetchAllowance]);
 
   const tuple = match as unknown as MatchTuple | undefined;
   const status = tuple?.[6] ?? -1;
