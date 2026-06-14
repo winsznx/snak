@@ -5,16 +5,15 @@ import { useEffect, useState } from "react";
 /**
  * Returns the current unix-second timestamp, updated every `intervalMs`.
  *
- * Lazy initializer reads `Date.now()` on the FIRST client paint instead of
- * starting at 0 — without this, every consumer (deadline countdowns, "X left"
- * pills) flashes "Infinity h Infinity m" for one frame because `deadline - 0`
- * blows up. SSR still gets `0` so hydration stays clean; the first client
- * render fills the real value.
+ * The lazy `Date.now()` initializer we used briefly caused a React 19
+ * hydration mismatch (server renders 0, client renders the real second).
+ * Now we always start at 0 on both server and first client render — then
+ * an effect fills the real value on the next paint. Consumers that show a
+ * countdown should guard "X left" rendering on `nowSec > 0` so they don't
+ * flash "Infinity" for one frame.
  */
 export function useNowSec(intervalMs = 60_000) {
-  const [nowSec, setNowSec] = useState<number>(() =>
-    typeof window === "undefined" ? 0 : Math.floor(Date.now() / 1000),
-  );
+  const [nowSec, setNowSec] = useState(0);
 
   useEffect(() => {
     setNowSec(Math.floor(Date.now() / 1000));
