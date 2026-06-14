@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { erc20Abi, parseEventLogs, parseUnits } from "viem";
 import {
   useAccount,
@@ -44,7 +44,7 @@ export function CreateMatchPanel() {
 
   const stakeWei = parseUnits(stake.toString(), 18);
 
-  const { data: allowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     abi: erc20Abi,
     address: CUSD_ADDRESS,
     functionName: "allowance",
@@ -53,10 +53,22 @@ export function CreateMatchPanel() {
   });
 
   const { writeContract, data: hash, reset, isPending } = useWriteContract();
-  const { isLoading: mining, data: receipt } = useWaitForTransactionReceipt({
+  const { isLoading: mining, isSuccess: confirmed, data: receipt } = useWaitForTransactionReceipt({
     hash,
     query: { enabled: !!hash },
   });
+
+  // wagmi v2 caches the initial allowance read — without an explicit refetch
+  // after the approve receipt lands, the next click sees the stale pre-
+  // approve value, still thinks an approve is needed, and sends another one.
+  // The user dead-ends in an infinite approve loop. Force the refetch the
+  // moment the approve receipt confirms.
+  useEffect(() => {
+    if (confirmed && phase === "approving") {
+      void refetchAllowance();
+      setPhase("idle");
+    }
+  }, [confirmed, phase, refetchAllowance]);
 
   // Parse the ArenaCreated event so the host gets a real match id to share —
   // without this, the create flow ends at "tx 0xab…" and the host has no way
