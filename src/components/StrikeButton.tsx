@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useChainKind } from "@/chain/ChainProvider";
 import { connectStacks, readStacksSession } from "@/chain/stacksSession";
+import { useStacksSession } from "@/chain/useStacksSession";
 import { useStacksWrite } from "@/chain/useStacksWrite";
 import {
   SNAK_STX_DAILY_STRIKE_FN,
@@ -21,12 +22,10 @@ export function StrikeButton() {
   const { address, isConnected } = useAccount();
   const nowSec = useNowSec();
   const stx = useStacksWrite();
-  const [stxConnected, setStxConnected] = useState(false);
-
-  useEffect(() => {
-    if (kind !== "stacks") return;
-    setStxConnected(readStacksSession().isConnected);
-  }, [kind]);
+  // Reactive subscription — without this the button stayed stuck on the old
+  // principal after a header-driven Stacks connect, and "connect stacks ▸"
+  // never flipped to "daily strike ▸" until the next render trigger.
+  const { isConnected: stxConnected, address: stxPrincipalSession } = useStacksSession();
 
   const { data: last } = useReadContract({
     abi: snakAbi,
@@ -64,7 +63,6 @@ export function StrikeButton() {
     let s = readStacksSession();
     if (!s.isConnected) {
       s = await connectStacks();
-      setStxConnected(s.isConnected);
       if (!s.isConnected) return;
     }
     const res = await stx.call({
@@ -93,7 +91,7 @@ export function StrikeButton() {
   // don't share each other's stamps. Falls back to the legacy unkeyed entry
   // for one release so users who struck before the key change still see
   // their cooldown surface.
-  const stxPrincipal = readStacksSession().address;
+  const stxPrincipal = stxPrincipalSession;
   if (typeof window !== "undefined" && kind === "stacks" && stxPrincipal) {
     try {
       const raw =
