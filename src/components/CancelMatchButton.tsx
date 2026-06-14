@@ -53,7 +53,7 @@ export function CancelMatchButton() {
           { abi: snakAbi, address: SNAK_ADDRESS, functionName: "matches", args: [idBn] },
         ] as const)
       : [],
-    query: { enabled: validId && isSnakDeployed, refetchInterval: 30_000 },
+    query: { enabled: kind === "celo" && validId && isSnakDeployed, refetchInterval: 30_000 },
   });
 
   const matchData = probes.data?.[0];
