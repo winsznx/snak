@@ -38,7 +38,7 @@ export function SettlePanel() {
     address: SNAK_ADDRESS,
     functionName: "getMatch",
     args: matchId !== undefined ? [matchId] : undefined,
-    query: { enabled: isSnakDeployed && matchId !== undefined, refetchInterval: 20_000 },
+    query: { enabled: kind === "celo" && isSnakDeployed && matchId !== undefined, refetchInterval: 20_000 },
   });
 
   const { writeContract: settleWrite, data: settleHash, isPending: settlePending } =
