@@ -123,7 +123,12 @@ export function CreateMatchPanel() {
       return;
     }
     const stakeMicroStx = BigInt(Math.floor(stake * 1_000_000));
-    const stxFrom = s.address;
+    // NOTE on post-condition mode: the deployed `snak.create-match` Clarity
+    // is currently a stub that doesn't stx-transfer? from tx-sender — so a
+    // `deny + willSendEq(stake)` post-condition would cause the wallet to
+    // refuse to sign with a post-condition violation. Flip to `deny` +
+    // exact STX post-condition the same day the SIP-010 escrow lands in
+    // snak.clar.
     await stx.call({
       contractAddress: SNAK_STX_DEPLOYER,
       contractName: SNAK_STX_CONTRACT,
@@ -133,12 +138,6 @@ export function CreateMatchPanel() {
         { type: "uint", value: BigInt(maxPlayers) },
         { type: "uint", value: deadlineBlocks },
       ],
-      // Sign with deny + an explicit microStx post-condition so the wallet
-      // refuses if create-match tries to debit more than the chosen stake.
-      postConditionMode: "deny",
-      postConditions: stxFrom
-        ? [{ type: "stx-eq", from: stxFrom, microStx: stakeMicroStx }]
-        : undefined,
     });
   }
 
