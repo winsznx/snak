@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { erc20Abi, formatUnits } from "viem";
 import {
   useAccount,
@@ -48,7 +48,7 @@ export function JoinMatchPanel() {
   });
 
   const stake = match?.stake ?? 0n;
-  const { data: allowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     abi: erc20Abi,
     address: CUSD_ADDRESS,
     functionName: "allowance",
@@ -57,7 +57,20 @@ export function JoinMatchPanel() {
   });
 
   const { writeContract, data: hash, reset, isPending } = useWriteContract();
-  const { isLoading: mining } = useWaitForTransactionReceipt({ hash });
+  const { isLoading: mining, isSuccess: confirmed } = useWaitForTransactionReceipt({
+    hash,
+    query: { enabled: !!hash },
+  });
+
+  // Refetch allowance after the approve receipt lands so the next click
+  // actually hits joinMatch instead of sending a second approve. wagmi v2
+  // doesn't invalidate the cached read on receipt by default.
+  useEffect(() => {
+    if (confirmed && phase === "approving") {
+      void refetchAllowance();
+      setPhase("idle");
+    }
+  }, [confirmed, phase, refetchAllowance]);
 
   const isOpen = match?.status === 0; // MatchStatus.Open
   const isFull = match ? match.joinedCount >= match.maxPlayers : false;
