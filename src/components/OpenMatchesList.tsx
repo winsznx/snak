@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { erc20Abi, formatUnits } from "viem";
 import {
   useAccount,
@@ -84,8 +84,9 @@ export function OpenMatchesList() {
   });
 
   // Track the tx so users see "approving…" / "joining…" + auto-refresh the
-  // open list once the join confirms. Without this the row keeps showing
-  // "JOIN ▸" while the wallet signs and the user thinks the click was lost.
+  // open list once the join confirms. We also remember WHICH match id is
+  // being signed so the in-flight row is the only one showing "MINING…" —
+  // without this every row in the list dims while any one is pending.
   const {
     writeContract,
     data: txHash,
@@ -96,6 +97,7 @@ export function OpenMatchesList() {
     hash: txHash,
     query: { enabled: !!txHash },
   });
+  const [activeMatchId, setActiveMatchId] = useState<bigint | null>(null);
 
   const open = useMemo(() => {
     if (!results) return [];
@@ -136,6 +138,7 @@ export function OpenMatchesList() {
   useEffect(() => {
     if (confirmed && txHash) {
       resetWrite();
+      setActiveMatchId(null);
     }
   }, [confirmed, txHash, resetWrite]);
 
@@ -219,6 +222,7 @@ export function OpenMatchesList() {
                   type="button"
                   disabled={!isConnected || isPending || mining}
                   onClick={() => {
+                    setActiveMatchId(m.id);
                     const need = !allowance || (allowance as bigint) < m.stake;
                     if (need) {
                       writeContract({
@@ -238,9 +242,9 @@ export function OpenMatchesList() {
                   }}
                   className="px-3 py-1 rounded border border-cyan text-cyan hover:bg-cyan/10 disabled:opacity-40 disabled:cursor-not-allowed uppercase tracking-widest text-[10px]"
                 >
-                  {mining
+                  {activeMatchId === m.id && mining
                     ? "MINING…"
-                    : isPending
+                    : activeMatchId === m.id && isPending
                       ? "SIGN…"
                       : !allowance || (allowance as bigint) < m.stake
                         ? "APPROVE ▸"
