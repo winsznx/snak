@@ -68,7 +68,7 @@ export function ForfeitMatchButton() {
           },
         ] as const)
       : [],
-    query: { enabled: validId && isSnakDeployed && isConnected, refetchInterval: 30_000 },
+    query: { enabled: kind === "celo" && validId && isSnakDeployed && isConnected, refetchInterval: 30_000 },
   });
 
   const matchData = probes.data?.[0];
