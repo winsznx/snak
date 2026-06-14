@@ -45,7 +45,7 @@ export function OpenMatchesList() {
   // approve-first call when the wallet hasn't pre-authorized the snak escrow.
   // Without this the click signs joinMatch directly and the tx reverts with
   // SafeERC20FailedOperation.
-  const { data: allowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     abi: erc20Abi,
     address: CUSD_ADDRESS,
     functionName: "allowance",
@@ -137,10 +137,14 @@ export function OpenMatchesList() {
   // every render and triggering an infinite update loop.
   useEffect(() => {
     if (confirmed && txHash) {
+      // Refetch allowance the moment any receipt confirms — if the user just
+      // approved cUSD for a row, the cached value would otherwise stay stale
+      // and the next click would send ANOTHER approve instead of joinMatch.
+      void refetchAllowance();
       resetWrite();
       setActiveMatchId(null);
     }
-  }, [confirmed, txHash, resetWrite]);
+  }, [confirmed, txHash, resetWrite, refetchAllowance]);
 
   if (kind === "stacks") {
     return <CeloOnlyNotice feature="The open-matches list" />;
