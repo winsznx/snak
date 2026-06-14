@@ -44,7 +44,7 @@ export function JoinMatchPanel() {
     address: SNAK_ADDRESS,
     functionName: "getMatch",
     args: matchId !== undefined ? [matchId] : undefined,
-    query: { enabled: isSnakDeployed && matchId !== undefined, refetchInterval: 20_000 },
+    query: { enabled: kind === "celo" && isSnakDeployed && matchId !== undefined, refetchInterval: 20_000 },
   });
 
   const stake = match?.stake ?? 0n;
@@ -53,7 +53,7 @@ export function JoinMatchPanel() {
     address: CUSD_ADDRESS,
     functionName: "allowance",
     args: address ? [address, SNAK_ADDRESS] : undefined,
-    query: { enabled: isConnected && isSnakDeployed && !!address && stake > 0n },
+    query: { enabled: kind === "celo" && isConnected && isSnakDeployed && !!address && stake > 0n },
   });
 
   const { writeContract, data: hash, reset, isPending } = useWriteContract();
