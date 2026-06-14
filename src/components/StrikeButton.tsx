@@ -73,9 +73,11 @@ export function StrikeButton() {
       functionName: SNAK_STX_DAILY_STRIKE_FN,
       args: [],
     });
-    if (res) {
+    if (res && s.address) {
       try {
-        window.localStorage.setItem("snak.strike.lastStx", String(Date.now()));
+        // Key by Stacks principal so switching wallets in the same browser
+        // doesn't inherit the previous user's cooldown stamp.
+        window.localStorage.setItem(`snak.strike.lastStx:${s.address}`, String(Date.now()));
       } catch {
         /* ignore */
       }
@@ -87,9 +89,16 @@ export function StrikeButton() {
   // real cooldown server-side; this just stops the optimistic UI from
   // letting the user spam through it.
   let stacksCooldownLabel: string | null = null;
-  if (typeof window !== "undefined" && kind === "stacks") {
+  // Read the per-principal cooldown key so two wallets in the same browser
+  // don't share each other's stamps. Falls back to the legacy unkeyed entry
+  // for one release so users who struck before the key change still see
+  // their cooldown surface.
+  const stxPrincipal = readStacksSession().address;
+  if (typeof window !== "undefined" && kind === "stacks" && stxPrincipal) {
     try {
-      const raw = window.localStorage.getItem("snak.strike.lastStx");
+      const raw =
+        window.localStorage.getItem(`snak.strike.lastStx:${stxPrincipal}`) ??
+        window.localStorage.getItem("snak.strike.lastStx");
       if (raw) {
         const last = Number(raw);
         const remaining = COOLDOWN_SEC - Math.floor((Date.now() - last) / 1000);
