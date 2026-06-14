@@ -61,7 +61,7 @@ export function ExtendDeadlinePanel() {
     address: SNAK_ADDRESS,
     functionName: "matches",
     args: validId ? [idBn] : undefined,
-    query: { enabled: validId && isSnakDeployed, refetchInterval: 30_000 },
+    query: { enabled: kind === "celo" && validId && isSnakDeployed, refetchInterval: 30_000 },
   });
   const tuple = matchData as MatchTuple | undefined;
 
