@@ -70,7 +70,7 @@ export function RescueStakeButton() {
           },
         ] as const)
       : [],
-    query: { enabled: validId && isSnakDeployed && isConnected && !!address, refetchInterval: 30_000 },
+    query: { enabled: kind === "celo" && validId && isSnakDeployed && isConnected && !!address, refetchInterval: 30_000 },
   });
 
   const tuple = probes.data?.[0]?.status === "success"
