@@ -1,8 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { erc20Abi, formatUnits } from "viem";
-import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useReadContracts,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import { useChainKind } from "@/chain/ChainProvider";
 import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
@@ -77,7 +83,19 @@ export function OpenMatchesList() {
     },
   });
 
-  const { writeContract, isPending } = useWriteContract();
+  // Track the tx so users see "approving…" / "joining…" + auto-refresh the
+  // open list once the join confirms. Without this the row keeps showing
+  // "JOIN ▸" while the wallet signs and the user thinks the click was lost.
+  const {
+    writeContract,
+    data: txHash,
+    isPending,
+    reset: resetWrite,
+  } = useWriteContract();
+  const { isLoading: mining, isSuccess: confirmed } = useWaitForTransactionReceipt({
+    hash: txHash,
+    query: { enabled: !!txHash },
+  });
 
   const open = useMemo(() => {
     if (!results) return [];
@@ -111,6 +129,15 @@ export function OpenMatchesList() {
       maxP: number;
     }>;
   }, [nowSec, results, startId]);
+
+  // After a join confirms, drop the tx so subsequent clicks aren't stuck on
+  // the previous receipt state. The effect gate stops this from firing on
+  // every render and triggering an infinite update loop.
+  useEffect(() => {
+    if (confirmed && txHash) {
+      resetWrite();
+    }
+  }, [confirmed, txHash, resetWrite]);
 
   if (kind === "stacks") {
     return <CeloOnlyNotice feature="The open-matches list" />;
@@ -190,7 +217,7 @@ export function OpenMatchesList() {
                 </span>
                 <button
                   type="button"
-                  disabled={!isConnected || isPending}
+                  disabled={!isConnected || isPending || mining}
                   onClick={() => {
                     const need = !allowance || (allowance as bigint) < m.stake;
                     if (need) {
@@ -211,11 +238,13 @@ export function OpenMatchesList() {
                   }}
                   className="px-3 py-1 rounded border border-cyan text-cyan hover:bg-cyan/10 disabled:opacity-40 disabled:cursor-not-allowed uppercase tracking-widest text-[10px]"
                 >
-                  {isPending
-                    ? "SIGN…"
-                    : !allowance || (allowance as bigint) < m.stake
-                      ? "APPROVE ▸"
-                      : "JOIN ▸"}
+                  {mining
+                    ? "MINING…"
+                    : isPending
+                      ? "SIGN…"
+                      : !allowance || (allowance as bigint) < m.stake
+                        ? "APPROVE ▸"
+                        : "JOIN ▸"}
                 </button>
               </div>
             </li>
