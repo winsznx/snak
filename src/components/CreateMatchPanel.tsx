@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { erc20Abi, parseUnits } from "viem";
+import { useMemo, useState } from "react";
+import { erc20Abi, parseEventLogs, parseUnits } from "viem";
 import {
   useAccount,
   useReadContract,
@@ -53,7 +53,31 @@ export function CreateMatchPanel() {
   });
 
   const { writeContract, data: hash, reset, isPending } = useWriteContract();
-  const { isLoading: mining } = useWaitForTransactionReceipt({ hash });
+  const { isLoading: mining, data: receipt } = useWaitForTransactionReceipt({
+    hash,
+    query: { enabled: !!hash },
+  });
+
+  // Parse the ArenaCreated event so the host gets a real match id to share —
+  // without this, the create flow ends at "tx 0xab…" and the host has no way
+  // to invite friends without guessing the next matchId.
+  const matchId = useMemo<bigint | null>(() => {
+    if (!receipt) return null;
+    try {
+      const events = parseEventLogs({
+        abi: snakAbi,
+        eventName: "ArenaCreated",
+        logs: receipt.logs,
+      });
+      const ev = events[0];
+      if (ev && "args" in ev) {
+        return (ev.args as { matchId: bigint }).matchId;
+      }
+    } catch {
+      /* approve receipt won't carry ArenaCreated — ignore */
+    }
+    return null;
+  }, [receipt]);
 
   const needsApprove = kind === "celo" && (!allowance || (allowance as bigint) < stakeWei);
   const enabledCelo = isConnected && isSnakDeployed && !mining && !isPending;
@@ -206,6 +230,12 @@ export function CreateMatchPanel() {
         <button type="button" onClick={() => reset()} className="text-xs text-silver underline">
           reset
         </button>
+      )}
+      {matchId !== null && (
+        <p className="text-[11px] font-mono uppercase tracking-widest text-toxic">
+          MATCH_ID&nbsp;<span className="text-snow">#{matchId.toString()}</span>
+          &nbsp;— share this id so friends can join via the JOIN_ARENA panel.
+        </p>
       )}
 
       {!isConnected && (
