@@ -58,7 +58,7 @@ export function BoostPrizePanel() {
     functionName: "matches",
     args: matchId !== undefined ? [matchId] : undefined,
     query: {
-      enabled: isSnakDeployed && matchId !== undefined,
+      enabled: kind === "celo" && isSnakDeployed && matchId !== undefined,
       refetchInterval: 20_000,
     },
   });
@@ -69,7 +69,7 @@ export function BoostPrizePanel() {
     functionName: "allowance",
     args: address ? [address, SNAK_ADDRESS] : undefined,
     query: {
-      enabled: isConnected && isSnakDeployed && !!address,
+      enabled: kind === "celo" && isConnected && isSnakDeployed && !!address,
       refetchInterval: 30_000,
     },
   });
