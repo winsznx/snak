@@ -202,9 +202,19 @@ export function BoostPrizePanel() {
       </button>
 
       {hash && (
-        <button type="button" onClick={() => reset()} className="text-[11px] text-silver underline">
-          reset
-        </button>
+        <div className="flex items-center gap-3 text-[11px]">
+          <a
+            href={`https://celoscan.io/tx/${hash}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-cyan underline hover:text-magenta"
+          >
+            view tx ↗
+          </a>
+          <button type="button" onClick={() => reset()} className="text-silver underline">
+            reset
+          </button>
+        </div>
       )}
 
       {!isConnected && (
