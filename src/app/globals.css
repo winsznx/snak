@@ -240,6 +240,18 @@ h1, h2, h3, h4, h5, h6 {
   50% { opacity: 0.8; filter: brightness(1.2); }
 }
 
+/*
+ * Horizontal marquee for the cyber ticker. Children must be duplicated so the
+ * second half scrolls in as the first half scrolls out, otherwise the loop
+ * looks like a single sliding-then-restart instead of a continuous belt.
+ * Without this keyframe the ticker referenced via `animate-[marquee_20s_…]`
+ * sat motionless — animation-name resolved to nothing.
+ */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
