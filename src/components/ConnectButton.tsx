@@ -28,7 +28,13 @@ export function ConnectButton() {
 
   useEffect(() => {
     if (kind !== "stacks") return;
-    isStacksWalletAvailable().then(setStxAvail);
+    let cancelled = false;
+    isStacksWalletAvailable().then((avail) => {
+      if (!cancelled) setStxAvail(avail);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [kind]);
 
   const isStacksConnected = useMemo(() => kind === "stacks" && !!stxAddr, [kind, stxAddr]);
