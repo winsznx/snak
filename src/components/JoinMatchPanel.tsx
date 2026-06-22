@@ -183,7 +183,14 @@ export function JoinMatchPanel() {
 
       {hash && (
         <div className="flex justify-between items-center text-[11px] text-silver">
-          <span>tx: {hash.slice(0, 10)}…</span>
+          <a
+            href={`https://celoscan.io/tx/${hash}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-cyan underline hover:text-toxic"
+          >
+            view tx ↗ ({hash.slice(0, 10)}…)
+          </a>
           <button type="button" onClick={() => reset()} className="underline">
             reset
           </button>
