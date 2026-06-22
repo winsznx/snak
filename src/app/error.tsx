@@ -15,7 +15,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <main className="app-shell flex min-h-screen items-center justify-center px-5 py-20">
+    <main className="app-shell flex min-h-[100svh] items-center justify-center px-5 py-20">
       <div className="rounded-lg border border-cyan/30 bg-carbon/80 p-8 text-center backdrop-blur">
         <div className="text-[11px] uppercase tracking-[0.2em] text-magenta font-mono">system fault</div>
         <h1 className="mt-3 text-2xl font-bold text-snow">The grid blinked</h1>
