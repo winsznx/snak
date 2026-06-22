@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { erc20Abi, parseEventLogs, parseUnits } from "viem";
 import {
   useAccount,
@@ -42,6 +42,10 @@ export function CreateMatchPanel() {
   const [phase, setPhase] = useState<"idle" | "approving" | "creating">("idle");
   const [hiroErr, setHiroErr] = useState<string | null>(null);
   const stx = useStacksWrite();
+  const mountedRef = useRef(true);
+  useEffect(() => () => {
+    mountedRef.current = false;
+  }, []);
 
   const stakeWei = parseUnits(stake.toString(), 18);
 
@@ -135,6 +139,7 @@ export function CreateMatchPanel() {
       if (tip === 0n) throw new Error("Hiro returned no tip height");
       deadlineBlocks = tip + BigInt(Math.max(1, Math.floor(durationSec / 600))); // ~600s per stacks block
     } catch (e) {
+      if (!mountedRef.current) return;
       setHiroErr(
         e instanceof Error
           ? `Hiro RPC unreachable — ${e.message}. Try again or switch networks.`
@@ -142,6 +147,7 @@ export function CreateMatchPanel() {
       );
       return;
     }
+    if (!mountedRef.current) return;
     const stakeMicroStx = BigInt(Math.floor(stake * 1_000_000));
     // NOTE on post-condition mode: the deployed `snak.create-match` Clarity
     // is currently a stub that doesn't stx-transfer? from tx-sender — so a
