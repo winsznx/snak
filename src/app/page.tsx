@@ -33,8 +33,8 @@ export default function Home() {
               Enter Arena
             </Link>
             <div className="font-mono text-xs uppercase tracking-wider text-silver">
-              <div>Entry: $0.10 (cUSD · STX)</div>
-              <div>Prize: dynamic pool</div>
+              <div>Entry: $0.50 cUSD · 0.5 STX</div>
+              <div>Prize: 60/30/10 split of the pool</div>
             </div>
           </div>
         </div>
