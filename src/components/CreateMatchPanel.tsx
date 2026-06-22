@@ -40,6 +40,7 @@ export function CreateMatchPanel() {
   const [maxPlayers, setMaxPlayers] = useState<number>(6);
   const [durationSec, setDurationSec] = useState<number>(60 * 60);
   const [phase, setPhase] = useState<"idle" | "approving" | "creating">("idle");
+  const [hiroErr, setHiroErr] = useState<string | null>(null);
   const stx = useStacksWrite();
 
   const stakeWei = parseUnits(stake.toString(), 18);
@@ -126,12 +127,19 @@ export function CreateMatchPanel() {
       if (!s.isConnected) return;
     }
     // Stacks deadline is a future block height — fetch tip from Hiro.
+    setHiroErr(null);
     let deadlineBlocks = 0n;
     try {
       const info = await fetch("https://api.hiro.so/v2/info").then((r) => r.json());
       const tip = BigInt(info?.stacks_tip_height ?? info?.burn_block_height ?? 0);
+      if (tip === 0n) throw new Error("Hiro returned no tip height");
       deadlineBlocks = tip + BigInt(Math.max(1, Math.floor(durationSec / 600))); // ~600s per stacks block
-    } catch {
+    } catch (e) {
+      setHiroErr(
+        e instanceof Error
+          ? `Hiro RPC unreachable — ${e.message}. Try again or switch networks.`
+          : "Hiro RPC unreachable. Try again.",
+      );
       return;
     }
     const stakeMicroStx = BigInt(Math.floor(stake * 1_000_000));
@@ -269,6 +277,9 @@ export function CreateMatchPanel() {
         </p>
       )}
 
+      {hiroErr && (
+        <p className="text-[11px] text-magenta uppercase tracking-widest">{hiroErr}</p>
+      )}
       {!isConnected && (
         <p className="text-[11px] text-silver">CONNECT_RIG to spin up an arena.</p>
       )}
