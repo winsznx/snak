@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useChainKind } from "@/chain/ChainProvider";
 import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
@@ -74,6 +74,11 @@ export function SettlePanel() {
   const canClaim =
     isSnakDeployed && !!match && status === 2 && isWinner && !claimMining && !claimPending;
 
+  const refetchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (refetchTimer.current) clearTimeout(refetchTimer.current);
+  }, []);
+
   function settle() {
     if (matchId === undefined) return;
     settleWrite({
@@ -82,7 +87,11 @@ export function SettlePanel() {
       functionName: "settleMatch",
       args: [matchId],
     });
-    setTimeout(() => refetch().catch(() => undefined), 8_000);
+    if (refetchTimer.current) clearTimeout(refetchTimer.current);
+    refetchTimer.current = setTimeout(
+      () => refetch().catch(() => undefined),
+      8_000,
+    );
   }
 
   function claim() {
