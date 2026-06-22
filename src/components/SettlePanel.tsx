@@ -41,12 +41,22 @@ export function SettlePanel() {
     query: { enabled: kind === "celo" && isSnakDeployed && matchId !== undefined, refetchInterval: 20_000 },
   });
 
-  const { writeContract: settleWrite, data: settleHash, isPending: settlePending } =
-    useWriteContract();
+  const {
+    writeContract: settleWrite,
+    data: settleHash,
+    isPending: settlePending,
+    error: settleError,
+    reset: resetSettle,
+  } = useWriteContract();
   const { isLoading: settleMining } = useWaitForTransactionReceipt({ hash: settleHash });
 
-  const { writeContract: claimWrite, data: claimHash, isPending: claimPending } =
-    useWriteContract();
+  const {
+    writeContract: claimWrite,
+    data: claimHash,
+    isPending: claimPending,
+    error: claimError,
+    reset: resetClaim,
+  } = useWriteContract();
   const { isLoading: claimMining } = useWaitForTransactionReceipt({ hash: claimHash });
 
   const status = match?.status ?? 0;
@@ -146,9 +156,32 @@ export function SettlePanel() {
       </div>
 
       {(settleHash || claimHash) && (
-        <div className="text-[11px] text-silver">
-          tx: {(settleHash || claimHash)?.slice(0, 10)}…
+        <div className="flex items-center gap-3 text-[11px]">
+          <a
+            href={`https://celoscan.io/tx/${settleHash || claimHash}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-cyan underline hover:text-toxic"
+          >
+            view tx ↗
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              resetSettle();
+              resetClaim();
+              setMatchInput("");
+            }}
+            className="text-silver underline"
+          >
+            reset
+          </button>
         </div>
+      )}
+      {(settleError || claimError) && (
+        <p className="text-[11px] text-magenta uppercase tracking-widest">
+          {(settleError || claimError)?.message?.split("\n")[0] ?? "transaction failed"}
+        </p>
       )}
     </div>
   );
