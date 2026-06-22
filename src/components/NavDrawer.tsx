@@ -6,7 +6,7 @@ import Link from "next/link";
 const LINKS = [
   { href: "/play", label: "Arena" },
   { href: "/leaderboard", label: "Rankings" },
-  { href: "/leaderboard#bounty", label: "Bounty" },
+  { href: "/play#boost", label: "Boost" },
   { href: "/", label: "Home" },
 ];
 
