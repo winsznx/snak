@@ -238,9 +238,29 @@ export function CreateMatchPanel() {
         {cta}
       </button>
       {hash && (
-        <button type="button" onClick={() => reset()} className="text-xs text-silver underline">
-          reset
-        </button>
+        <div className="flex items-center gap-3 text-xs">
+          <a
+            href={`https://celoscan.io/tx/${hash}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-cyan underline hover:text-toxic"
+          >
+            view tx ↗
+          </a>
+          <button type="button" onClick={() => reset()} className="text-silver underline">
+            reset
+          </button>
+        </div>
+      )}
+      {stx.txid && (
+        <a
+          href={`https://explorer.hiro.so/txid/${stx.txid}?chain=mainnet`}
+          target="_blank"
+          rel="noreferrer"
+          className="text-xs text-cyan underline hover:text-toxic"
+        >
+          view stacks tx ↗
+        </a>
       )}
       {matchId !== null && (
         <p className="text-[11px] font-mono uppercase tracking-widest text-toxic">
