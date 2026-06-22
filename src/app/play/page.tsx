@@ -82,8 +82,8 @@ export default function Play() {
               </a>
               
               <div className="mt-6 pt-6 border-t border-ash w-full flex justify-between items-center text-xs font-mono">
-                <span className="text-smoke">FEE DEBIT</span>
-                <span className="text-cyan">$0.10 (CELO · STX)</span>
+                <span className="text-smoke">STAKE</span>
+                <span className="text-cyan">$0.50 CELO · 0.5 STX</span>
               </div>
             </div>
           </div>
