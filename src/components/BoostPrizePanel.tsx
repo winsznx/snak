@@ -180,7 +180,7 @@ export function BoostPrizePanel() {
               key={p}
               type="button"
               onClick={() => setAmount(p)}
-              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+              className={`px-3 py-1.5 min-h-[44px] text-xs rounded border transition-colors ${
                 amount === p
                   ? "border-magenta text-magenta"
                   : "border-ash text-silver hover:text-snow"
