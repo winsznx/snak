@@ -137,7 +137,7 @@ export function Leaderboard() {
       </div>
 
       <div className="mt-10 surface-elevated rounded-lg overflow-hidden">
-        <div className="grid grid-cols-[44px_1fr_72px_140px_96px] sm:grid-cols-[56px_1fr_92px_160px_120px] items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 bg-carbon/60 border-b border-ash">
+        <div className="grid grid-cols-[40px_1fr_64px_88px] sm:grid-cols-[56px_1fr_92px_160px_120px] items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 bg-carbon/60 border-b border-ash">
           <div className="text-[10px] uppercase tracking-[0.18em] text-silver font-mono">Rank</div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-silver font-mono">Agent</div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-silver font-mono text-right">Actions</div>
@@ -160,7 +160,7 @@ export function Leaderboard() {
             {top.map((row, idx) => (
               <li
                 key={row.address}
-                className="grid grid-cols-[44px_1fr_72px_140px_96px] sm:grid-cols-[56px_1fr_92px_160px_120px] items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-ash last:border-b-0 hover:bg-graphite/50 transition-colors"
+                className="grid grid-cols-[40px_1fr_64px_88px] sm:grid-cols-[56px_1fr_92px_160px_120px] items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-ash last:border-b-0 hover:bg-graphite/50 transition-colors"
               >
                 <RankCell rank={idx + 1} />
                 <AddressCell address={row.address} breakdown={row.eventBreakdown} chain={chain} />
