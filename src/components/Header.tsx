@@ -24,7 +24,7 @@ export function Header({ showWallet = true }: { showWallet?: boolean }) {
         <nav className="hidden items-center gap-1 rounded-lg bg-carbon/80 p-1 md:flex">
           <Link href="/play" className="nav-link">Arena</Link>
           <Link href="/leaderboard" className="nav-link">Rankings</Link>
-          <Link href="/leaderboard#bounty" className="nav-link">Bounty</Link>
+          <Link href="/play#boost" className="nav-link">Boost</Link>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
