@@ -10,7 +10,7 @@ export default function PlayError({
   reset: () => void;
 }) {
   return (
-    <main className="app-shell flex min-h-screen items-center justify-center px-5 py-20">
+    <main className="app-shell flex min-h-[100svh] items-center justify-center px-5 py-20">
       <div className="rounded-lg border border-magenta/40 bg-carbon/80 p-8 text-center backdrop-blur">
         <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-magenta">arena failure</div>
         <h1 className="mt-3 font-display text-2xl font-bold uppercase tracking-[0.1em] text-snow">
