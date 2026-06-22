@@ -244,7 +244,7 @@ export function OpenMatchesList() {
                       args: [m.id],
                     });
                   }}
-                  className="px-3 py-1 rounded border border-cyan text-cyan hover:bg-cyan/10 disabled:opacity-40 disabled:cursor-not-allowed uppercase tracking-widest text-[10px]"
+                  className="px-3 py-2 min-h-[44px] rounded border border-cyan text-cyan hover:bg-cyan/10 disabled:opacity-40 disabled:cursor-not-allowed uppercase tracking-widest text-[10px]"
                 >
                   {activeMatchId === m.id && mining
                     ? "MINING…"
