@@ -43,11 +43,24 @@ export default function Home() {
       </section>
 
       <div className="relative z-20 overflow-hidden border-t border-ash bg-carbon/50 py-3 backdrop-blur-md">
-        <div className="flex gap-12 whitespace-nowrap font-mono text-xs text-smoke animate-[marquee_20s_linear_infinite]">
-          <span>LATEST_KILL: 0X7F...8A2 ELIMINATED 0X2B...1F9</span>
-          <span className="text-cyan">RANK_1: 0X4A...9E0 (MASS: 12,450)</span>
-          <span>PRIZE_POOL: $42.50 (CELO+STACKS)</span>
-          <span className="text-toxic">AGENT_STATUS: ONLINE</span>
+        <div
+          className="flex w-max gap-12 whitespace-nowrap font-mono text-xs text-smoke animate-[marquee_20s_linear_infinite]"
+          aria-hidden
+        >
+          {/*
+            Children duplicated so the keyframe's -50% translate has a second
+            copy to roll in. Without the dupe the belt would slide once and
+            leave empty space. aria-hidden because the line is purely
+            atmospheric — no real-time data.
+          */}
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="flex gap-12">
+              <span>AGENT_STATUS: ONLINE</span>
+              <span className="text-cyan">ARENA_ESCROW: cUSD + STX</span>
+              <span>STAKE_RANGE: $0.50 — $5</span>
+              <span className="text-toxic">PRIZE_SPLIT: 60/30/10</span>
+            </div>
+          ))}
         </div>
       </div>
     </main>
