@@ -197,7 +197,7 @@ export function CreateMatchPanel() {
               key={p}
               type="button"
               onClick={() => setMaxPlayers(p)}
-              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+              className={`px-3 py-1.5 min-h-[44px] text-xs rounded border transition-colors ${
                 maxPlayers === p
                   ? "border-magenta text-magenta"
                   : "border-ash text-silver hover:text-snow"
@@ -217,7 +217,7 @@ export function CreateMatchPanel() {
               key={d.label}
               type="button"
               onClick={() => setDurationSec(d.seconds)}
-              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+              className={`px-3 py-1.5 min-h-[44px] text-xs rounded border transition-colors ${
                 durationSec === d.seconds
                   ? "border-cyan text-cyan"
                   : "border-ash text-silver hover:text-snow"
