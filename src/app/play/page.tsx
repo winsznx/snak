@@ -160,7 +160,7 @@ export default function Play() {
       </section>
 
       {/* Sponsor: top up any active match's prize pool */}
-      <section className="relative z-10 w-full max-w-5xl mt-6">
+      <section id="boost" className="relative z-10 w-full max-w-5xl mt-6 scroll-mt-24">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-magenta">
             ▸ BOOST_POOL
