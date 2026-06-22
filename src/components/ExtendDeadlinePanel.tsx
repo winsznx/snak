@@ -154,7 +154,7 @@ export function ExtendDeadlinePanel() {
               key={o.label}
               type="button"
               onClick={() => setExtra(o.seconds)}
-              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+              className={`px-3 py-1.5 min-h-[44px] text-xs rounded border transition-colors ${
                 extra === o.seconds
                   ? "border-cyan text-cyan"
                   : "border-ash text-silver hover:text-snow"
