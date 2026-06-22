@@ -24,7 +24,7 @@ export function ConnectButton() {
   const { address: stxAddr } = useStacksSession();
 
   const baseClass =
-    "px-4 py-2 rounded border border-cyan/40 bg-carbon font-mono text-xs uppercase tracking-widest text-cyan hover:border-cyan hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all";
+    "px-4 py-2 min-h-[44px] min-w-[152px] inline-flex items-center justify-center rounded border border-cyan/40 bg-carbon font-mono text-xs uppercase tracking-widest text-cyan hover:border-cyan hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all";
 
   useEffect(() => {
     if (kind !== "stacks") return;
