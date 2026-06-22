@@ -184,9 +184,19 @@ export function ExtendDeadlinePanel() {
       </button>
 
       {hash && (
-        <button type="button" onClick={() => reset()} className="text-[10px] text-silver underline">
-          reset
-        </button>
+        <div className="flex items-center gap-3 text-[10px]">
+          <a
+            href={`https://celoscan.io/tx/${hash}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-cyan underline hover:text-toxic"
+          >
+            view tx ↗
+          </a>
+          <button type="button" onClick={() => reset()} className="text-silver underline">
+            reset
+          </button>
+        </div>
       )}
       {confirmed && (
         <p className="text-[11px] text-toxic uppercase tracking-widest">
