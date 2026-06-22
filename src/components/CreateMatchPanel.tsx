@@ -177,13 +177,13 @@ export function CreateMatchPanel() {
               key={s}
               type="button"
               onClick={() => setStake(s)}
-              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+              className={`min-h-[44px] px-3 py-1.5 text-xs rounded border transition-colors ${
                 stake === s
                   ? "border-toxic text-toxic"
                   : "border-ash text-silver hover:text-snow"
               }`}
             >
-              ${s}
+              {kind === "celo" ? `$${s}` : `${s} STX`}
             </button>
           ))}
         </div>
