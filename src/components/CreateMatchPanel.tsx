@@ -57,7 +57,8 @@ export function CreateMatchPanel() {
     query: { enabled: isConnected && isSnakDeployed && !!address },
   });
 
-  const { writeContract, data: hash, reset, isPending } = useWriteContract();
+  const { writeContract, data: hash, reset, isPending, error: writeError } =
+    useWriteContract();
   const { isLoading: mining, isSuccess: confirmed, data: receipt } = useWaitForTransactionReceipt({
     hash,
     query: { enabled: !!hash },
@@ -74,6 +75,12 @@ export function CreateMatchPanel() {
       setPhase("idle");
     }
   }, [confirmed, phase, refetchAllowance]);
+
+  // Drop phase to idle on wallet reject / contract revert so the CTA returns
+  // to "Open arena ▸" instead of staying on "Approving stake…".
+  useEffect(() => {
+    if (writeError || stx.error) setPhase("idle");
+  }, [writeError, stx.error]);
 
   // Parse the ArenaCreated event so the host gets a real match id to share —
   // without this, the create flow ends at "tx 0xab…" and the host has no way
@@ -285,6 +292,14 @@ export function CreateMatchPanel() {
 
       {hiroErr && (
         <p className="text-[11px] text-magenta uppercase tracking-widest">{hiroErr}</p>
+      )}
+      {writeError && (
+        <p className="text-[11px] text-magenta">
+          {writeError.message.split("\n")[0]}
+        </p>
+      )}
+      {stx.error && (
+        <p className="text-[11px] text-magenta">{stx.error.split("\n")[0]}</p>
       )}
       {!isConnected && (
         <p className="text-[11px] text-silver">CONNECT_RIG to spin up an arena.</p>
