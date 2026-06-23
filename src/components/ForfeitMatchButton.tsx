@@ -88,8 +88,11 @@ export function ForfeitMatchButton() {
   const status = matchTuple?.[6] ?? -1;
   const stake = matchTuple?.[1] ?? 0n;
   const deadline = matchTuple?.[3] ?? 0n;
-  const beforeDeadline = deadline > 0n && now < deadline;
+  // Guard on nowSec > 0 so an expired match doesn't briefly flash 'eligible'
+  // on first paint while useNowSec is still hydration-safe-0.
+  const beforeDeadline = nowSec > 0 && deadline > 0n && now < deadline;
   const eligible =
+    nowSec > 0 &&
     validId && isConnected && isSnakDeployed && hasJoined && !hasForfeited && status === 0 && beforeDeadline;
 
   const refundCusd = stake > 0n ? Number(formatUnits((stake * 8000n) / 10000n, 18)).toFixed(2) : "—";
