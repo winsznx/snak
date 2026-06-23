@@ -86,26 +86,38 @@ export function StrikeButton() {
   // doesn't fire the wallet popup repeatedly. The contract enforces the
   // real cooldown server-side; this just stops the optimistic UI from
   // letting the user spam through it.
-  let stacksCooldownLabel: string | null = null;
-  // Read the per-principal cooldown key so two wallets in the same browser
-  // don't share each other's stamps. Falls back to the legacy unkeyed entry
-  // for one release so users who struck before the key change still see
-  // their cooldown surface.
+  //
+  // Read the per-principal cooldown stamp from localStorage in a post-mount
+  // effect (NOT during render) — reading window.localStorage inline during
+  // render violates React purity, breaks SSR/hydration parity, and produces
+  // stale reads under Strict Mode / concurrent rendering. Refresh on a tick
+  // so the countdown label decays. Guard Number() with isFinite so a
+  // user-tampered key doesn't silently disable the local cooldown.
   const stxPrincipal = stxPrincipalSession;
-  if (typeof window !== "undefined" && kind === "stacks" && stxPrincipal) {
-    try {
-      const raw =
-        window.localStorage.getItem(`snak.strike.lastStx:${stxPrincipal}`) ??
-        window.localStorage.getItem("snak.strike.lastStx");
-      if (raw) {
-        const last = Number(raw);
-        const remaining = COOLDOWN_SEC - Math.floor((Date.now() - last) / 1000);
-        if (remaining > 0) stacksCooldownLabel = fmt(remaining);
-      }
-    } catch {
-      /* ignore */
+  const [stacksCooldownLabel, setStacksCooldownLabel] = useState<string | null>(null);
+  useEffect(() => {
+    if (kind !== "stacks" || !stxPrincipal) {
+      setStacksCooldownLabel(null);
+      return;
     }
-  }
+    const compute = () => {
+      try {
+        const raw =
+          window.localStorage.getItem(`snak.strike.lastStx:${stxPrincipal}`) ??
+          window.localStorage.getItem("snak.strike.lastStx");
+        if (!raw) return setStacksCooldownLabel(null);
+        const last = Number(raw);
+        if (!Number.isFinite(last)) return setStacksCooldownLabel(null);
+        const remaining = COOLDOWN_SEC - Math.floor((Date.now() - last) / 1000);
+        setStacksCooldownLabel(remaining > 0 ? fmt(remaining) : null);
+      } catch {
+        setStacksCooldownLabel(null);
+      }
+    };
+    compute();
+    const id = window.setInterval(compute, 30_000);
+    return () => window.clearInterval(id);
+  }, [kind, stxPrincipal, stx.txid]);
 
   const ctaCelo = mining
     ? "striking…"
