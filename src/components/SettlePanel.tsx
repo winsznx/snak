@@ -60,7 +60,9 @@ export function SettlePanel() {
   const { isLoading: claimMining } = useWaitForTransactionReceipt({ hash: claimHash });
 
   const status = match?.status ?? 0;
-  const deadlinePassed = match ? Number(match.deadline) < nowSec : false;
+  // useNowSec is 0 on first paint, so an expired match would briefly read as
+  // not-yet-passed and disable the Settle button — gate on nowSec > 0.
+  const deadlinePassed = match && nowSec > 0 ? Number(match.deadline) < nowSec : false;
   const isWinner = match && address && match.winner.toLowerCase() === address.toLowerCase();
 
   // 0 = Open, 1 = Locked, 2 = Settled, 3 = Cancelled
