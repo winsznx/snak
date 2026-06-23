@@ -92,4 +92,14 @@ export async function disconnectStacks(): Promise<void> {
   } catch {
     /* ignore */
   }
+  // The `storage` event does NOT fire in the same tab that did the removeItem,
+  // so useStacksSession's listener would stay subscribed to a stale value for
+  // up to 10s until the safety poll caught up — the connected pill would keep
+  // showing the old address. Dispatch a synthetic event so the in-tab hook
+  // recomputes immediately.
+  try {
+    window.dispatchEvent(new StorageEvent("storage", { key: "@stacks/connect" }));
+  } catch {
+    /* ignore — pre-spec runtimes can't construct StorageEvent */
+  }
 }
