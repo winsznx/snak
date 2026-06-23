@@ -101,6 +101,10 @@ export function OpenMatchesList() {
 
   const open = useMemo(() => {
     if (!results) return [];
+    // useNowSec is 0 on first paint (hydration-safe) — skip the deadline
+    // filter entirely so we don't briefly admit expired matches with a huge
+    // "left" label; the next effect tick will repopulate with real values.
+    if (nowSec === 0) return [];
     const now = BigInt(nowSec);
     return results
       .map((r, idx) => {
