@@ -87,7 +87,11 @@ export function RescueStakeButton() {
   const rescueOpensAt = deadline + BigInt(RESCUE_DELAY_SECONDS);
   const stakeStr = stake > 0n ? Number(formatUnits(stake, 18)).toFixed(2) : "—";
 
+  // useNowSec=0 on first paint would make `now >= rescueOpensAt` false even
+  // for long-past deadlines, briefly flashing "rescue opens …" before the
+  // effect snaps to enabled — gate on nowSec > 0 per the hook's own contract.
   const eligible =
+    nowSec > 0 &&
     validId && isConnected && isSnakDeployed && joined && !forfeited && !claimed &&
     (status === 0 || status === 1) && deadline > 0n && now >= rescueOpensAt;
 
