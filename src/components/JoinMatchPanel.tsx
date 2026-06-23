@@ -74,7 +74,9 @@ export function JoinMatchPanel() {
 
   const isOpen = match?.status === 0; // MatchStatus.Open
   const isFull = match ? match.joinedCount >= match.maxPlayers : false;
-  const isExpired = match ? Number(match.deadline) <= nowSec : false;
+  // useNowSec=0 on first paint would flash an expired match as OPEN and
+  // briefly enable JOIN — gate on nowSec > 0.
+  const isExpired = match && nowSec > 0 ? Number(match.deadline) <= nowSec : false;
   const needsApprove = !allowance || (allowance as bigint) < stake;
 
   function join() {
