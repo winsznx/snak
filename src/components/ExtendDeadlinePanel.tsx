@@ -10,6 +10,7 @@ import {
 import { useChainKind } from "@/chain/ChainProvider";
 import { CeloOnlyNotice } from "@/components/CeloOnlyNotice";
 import { snakAbi } from "@/lib/abi/snak";
+import { useNowSec } from "@/lib/useNowSec";
 import { SNAK_ADDRESS, isSnakDeployed } from "@/lib/wagmi";
 
 type MatchTuple = readonly [
@@ -74,9 +75,16 @@ export function ExtendDeadlinePanel() {
 
   const eligible = validId && isConnected && isSnakDeployed && isCreator && status === 0;
 
+  const nowSec = useNowSec();
+  // Floor to nowSec before adding the extra window — the snak contract
+  // requires newDeadline > block.timestamp, so extending an already-expired
+  // (but still Open) match by deadline + extra would silently revert when
+  // (deadline + extra) is still in the past. Use max(deadline, now) + extra.
   const computedNewDeadline = (() => {
     if (deadline === 0n) return 0n;
-    return deadline + BigInt(extra);
+    if (nowSec === 0) return deadline + BigInt(extra); // first paint — hook will refire
+    const base = deadline > BigInt(nowSec) ? deadline : BigInt(nowSec);
+    return base + BigInt(extra);
   })();
 
   function submit() {
