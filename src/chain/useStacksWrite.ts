@@ -103,13 +103,21 @@ export function useStacksWrite(): StacksWriteState & {
           postConditions = opts.postConditions.map((p) =>
             serialize(pcBuilder.principal(p.from).willSendEq(p.microStx).ustx()),
           );
+        } else if (mode === "deny") {
+          // Refuse to sign. The caller picked deny+postConditions for safety,
+          // so silently dropping them and proceeding would let the wallet
+          // sign a call that could move arbitrary STX. Fail loudly so the
+          // bug is visible at the call site instead of becoming a footgun.
+          const err = new Error(
+            "useStacksWrite: deny-mode post-conditions requested but @stacks/transactions did not expose Pc/postConditionToHex — refusing to broadcast.",
+          );
+          setError(err.message);
+          setPending(false);
+          throw err;
         } else {
-          // The caller asked for post-conditions but the SDK didn't expose
-          // Pc or postConditionToHex. Surface this — without the warning
-          // every deny+postConditions call silently downgrades to "no
-          // post-conditions" and the wallet signs anything.
+          // Allow-mode caller — post-conditions are advisory, so just warn.
           console.warn(
-            "useStacksWrite: @stacks/transactions did not expose Pc or postConditionToHex; post-conditions on this call will not be enforced.",
+            "useStacksWrite: post-conditions not enforced (Pc/postConditionToHex missing).",
           );
         }
       }
