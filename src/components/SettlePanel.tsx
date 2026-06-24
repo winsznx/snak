@@ -118,7 +118,7 @@ export function SettlePanel() {
       <input
         type="text"
         inputMode="numeric"
-        placeholder="match id"
+        placeholder="match id" aria-label="Match id"
         value={matchInput}
         onChange={(e) => setMatchInput(e.target.value)}
         className="w-full bg-void border border-ash rounded px-3 py-2 text-snow placeholder-smoke focus:border-toxic outline-none"

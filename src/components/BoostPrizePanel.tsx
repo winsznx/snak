@@ -146,7 +146,7 @@ export function BoostPrizePanel() {
           inputMode="numeric"
           value={matchIdRaw}
           onChange={(e) => setMatchIdRaw(e.target.value)}
-          placeholder="0"
+          placeholder="0" aria-label="Match id"
           className="w-full bg-void border border-ash rounded px-3 py-2 text-snow text-sm focus:outline-none focus:border-magenta"
         />
       </div>

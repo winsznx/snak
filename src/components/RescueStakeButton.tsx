@@ -147,7 +147,7 @@ export function RescueStakeButton() {
           min={0}
           value={matchId}
           onChange={(e) => setMatchId(e.target.value)}
-          placeholder="0"
+          placeholder="0" aria-label="Match id"
           className="w-full bg-void border border-ash rounded px-3 py-2 text-snow text-sm"
         />
       </div>
