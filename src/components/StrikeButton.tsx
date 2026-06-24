@@ -148,6 +148,7 @@ export function StrikeButton() {
       type="button"
       onClick={submit}
       disabled={!canSubmit}
+      aria-busy={mining || isPending || stx.pending}
       className="px-3 py-2 min-h-[44px] min-w-[160px] inline-flex items-center justify-center rounded border border-toxic/40 bg-carbon font-mono text-[11px] uppercase tracking-widest text-toxic hover:border-toxic disabled:opacity-30"
     >
       {cta}

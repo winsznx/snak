@@ -257,6 +257,7 @@ export function CreateMatchPanel() {
         type="button"
         onClick={submit}
         disabled={!enabled}
+        aria-busy={mining || isPending || stx.pending}
         className="w-full px-4 py-3 rounded border border-cyan bg-cyan/10 hover:bg-cyan/20 text-cyan uppercase tracking-widest text-sm disabled:opacity-30"
       >
         {cta}
