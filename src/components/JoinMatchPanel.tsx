@@ -178,6 +178,7 @@ export function JoinMatchPanel() {
         type="button"
         onClick={join}
         disabled={!canSubmit}
+          aria-busy={mining || isPending}
         className="w-full px-4 py-3 rounded border border-magenta bg-magenta/10 hover:bg-magenta/20 text-magenta uppercase tracking-widest text-sm disabled:opacity-30"
       >
         {cta}

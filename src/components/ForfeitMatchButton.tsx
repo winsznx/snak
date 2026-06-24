@@ -157,6 +157,7 @@ export function ForfeitMatchButton() {
         type="button"
         onClick={submit}
         disabled={!eligible || mining || isPending}
+        aria-busy={mining || isPending}
         className="w-full px-4 py-3 rounded border border-magenta bg-magenta/10 hover:bg-magenta/20 text-magenta uppercase tracking-widest text-sm disabled:opacity-30"
       >
         {mining ? "MINING…" : isPending ? "WAITING_FOR_WALLET" : "ABORT ▸ TAKE 80% BACK"}

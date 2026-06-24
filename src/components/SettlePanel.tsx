@@ -152,6 +152,7 @@ export function SettlePanel() {
           type="button"
           onClick={settle}
           disabled={!canSettle}
+          aria-busy={settleMining || settlePending}
           className="px-3 py-2 rounded border border-toxic bg-toxic/10 hover:bg-toxic/20 text-toxic text-xs uppercase tracking-widest disabled:opacity-30"
         >
           {settleMining ? "settling…" : "settle ▸"}
@@ -160,6 +161,7 @@ export function SettlePanel() {
           type="button"
           onClick={claim}
           disabled={!canClaim}
+          aria-busy={claimMining || claimPending}
           className="px-3 py-2 rounded border border-cyan bg-cyan/10 hover:bg-cyan/20 text-cyan text-xs uppercase tracking-widest disabled:opacity-30"
         >
           {claimMining ? "claiming…" : "claim prize ▸"}

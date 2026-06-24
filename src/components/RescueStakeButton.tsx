@@ -164,6 +164,7 @@ export function RescueStakeButton() {
         type="button"
         onClick={submit}
         disabled={!eligible || mining || isPending}
+        aria-busy={mining || isPending}
         className="w-full px-4 py-3 rounded border border-cyan bg-cyan/10 hover:bg-cyan/20 text-cyan uppercase tracking-widest text-sm disabled:opacity-30"
       >
         {mining ? "MINING…" : isPending ? "WAITING_FOR_WALLET" : "RESCUE ▸"}

@@ -128,6 +128,7 @@ export function CancelMatchButton() {
         type="button"
         onClick={submit}
         disabled={!eligible || mining || isPending}
+        aria-busy={mining || isPending}
         className="w-full px-4 py-3 rounded border border-silver bg-silver/10 hover:bg-silver/20 text-silver hover:text-snow uppercase tracking-widest text-sm disabled:opacity-30"
       >
         {mining ? "MINING…" : isPending ? "WAITING_FOR_WALLET" : "CANCEL ▸"}
