@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { useChainKind } from "@/chain/ChainProvider";
 import { useStacksSession } from "@/chain/useStacksSession";
@@ -22,6 +22,35 @@ export function ConnectButton() {
   const [stxBusy, setStxBusy] = useState(false);
   const [stxInstallOpen, setStxInstallOpen] = useState(false);
   const { address: stxAddr } = useStacksSession();
+  const installPopoverRef = useRef<HTMLDivElement | null>(null);
+  const selectPopoverRef = useRef<HTMLDivElement | null>(null);
+
+  // Dismiss popovers on Escape and on outside-click. Without this, keyboard
+  // users couldn't close them without tabbing through every item, and a
+  // click outside silently left them open.
+  useEffect(() => {
+    if (!stxInstallOpen && !open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (stxInstallOpen) setStxInstallOpen(false);
+      if (open) setOpen(false);
+    };
+    const onPointer = (e: PointerEvent) => {
+      const t = e.target as Node | null;
+      if (stxInstallOpen && installPopoverRef.current && !installPopoverRef.current.contains(t)) {
+        setStxInstallOpen(false);
+      }
+      if (open && selectPopoverRef.current && !selectPopoverRef.current.contains(t)) {
+        setOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onPointer);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onPointer);
+    };
+  }, [stxInstallOpen, open]);
 
   const baseClass =
     "px-4 py-2 min-h-[44px] min-w-[152px] inline-flex items-center justify-center rounded border border-cyan/40 bg-carbon font-mono text-xs uppercase tracking-widest text-cyan hover:border-cyan hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all";
@@ -58,16 +87,22 @@ export function ConnectButton() {
 
     if (stxAvail === false) {
       return (
-        <div className="relative">
+        <div className="relative" ref={installPopoverRef}>
           <button
             type="button"
+            aria-haspopup="dialog"
+            aria-expanded={stxInstallOpen}
             className={baseClass}
             onClick={() => setStxInstallOpen((v) => !v)}
           >
             ▸ INSTALL_RIG
           </button>
           {stxInstallOpen && (
-            <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded border border-cyan/40 bg-carbon p-3 shadow-[0_0_30px_rgba(0,229,255,0.2)] space-y-2 text-xs font-mono">
+            <div
+              role="dialog"
+              aria-label="Install a Stacks wallet"
+              className="absolute right-0 top-full z-50 mt-2 w-64 rounded border border-cyan/40 bg-carbon p-3 shadow-[0_0_30px_rgba(0,229,255,0.2)] space-y-2 text-xs font-mono"
+            >
               <p className="text-silver">Need Leather or Xverse to sign Stacks transactions.</p>
               <a
                 href="https://leather.io/install-extension"
@@ -139,11 +174,21 @@ export function ConnectButton() {
   }
 
   return (
-    <div className="relative">
-      <button type="button" onClick={() => setOpen(false)} className={baseClass}>
+    <div className="relative" ref={selectPopoverRef}>
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen(false)}
+        className={baseClass}
+      >
         SELECT_RIG
       </button>
-      <div className="absolute right-0 top-full mt-2 w-56 bg-carbon border border-cyan/40 rounded p-2 z-50 space-y-1 shadow-[0_0_30px_rgba(0,229,255,0.2)]">
+      <div
+        role="menu"
+        aria-label="Select wallet connector"
+        className="absolute right-0 top-full mt-2 w-56 bg-carbon border border-cyan/40 rounded p-2 z-50 space-y-1 shadow-[0_0_30px_rgba(0,229,255,0.2)]"
+      >
         {connectors.length === 0 ? (
           <p className="text-xs text-silver font-mono p-2">no_signal</p>
         ) : (
