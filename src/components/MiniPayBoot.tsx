@@ -20,7 +20,12 @@ export function MiniPayBoot() {
     const eth = (globalThis as { ethereum?: { isMiniPay?: boolean } }).ethereum;
     if (eth?.isMiniPay) {
       tried.current = true;
-      connect({ connector: injected({ target: "metaMask" }) });
+      // MiniPay injects window.ethereum with isMiniPay=true but does NOT set
+      // isMetaMask, so wagmi's injected({ target: "metaMask" }) target
+      // descriptor (which keys off isMetaMask) fails to discover MiniPay's
+      // provider in newer builds. Bare injected() picks up window.ethereum
+      // directly, matching MiniPay's own integration guidance.
+      connect({ connector: injected() });
     }
   }, [isConnected, connect]);
 
