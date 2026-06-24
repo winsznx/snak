@@ -161,6 +161,7 @@ export function ExtendDeadlinePanel() {
             <button
               key={o.label}
               type="button"
+              aria-pressed={extra === o.seconds}
               onClick={() => setExtra(o.seconds)}
               className={`px-3 py-1.5 min-h-[44px] text-xs rounded border transition-colors ${
                 extra === o.seconds

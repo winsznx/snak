@@ -197,6 +197,7 @@ export function CreateMatchPanel() {
             <button
               key={s}
               type="button"
+              aria-pressed={stake === s}
               onClick={() => setStake(s)}
               className={`min-h-[44px] px-3 py-1.5 text-xs rounded border transition-colors ${
                 stake === s
@@ -217,6 +218,7 @@ export function CreateMatchPanel() {
             <button
               key={p}
               type="button"
+              aria-pressed={maxPlayers === p}
               onClick={() => setMaxPlayers(p)}
               className={`px-3 py-1.5 min-h-[44px] text-xs rounded border transition-colors ${
                 maxPlayers === p
@@ -237,6 +239,7 @@ export function CreateMatchPanel() {
             <button
               key={d.label}
               type="button"
+              aria-pressed={durationSec === d.seconds}
               onClick={() => setDurationSec(d.seconds)}
               className={`px-3 py-1.5 min-h-[44px] text-xs rounded border transition-colors ${
                 durationSec === d.seconds
