@@ -50,7 +50,14 @@ export function BoostPrizePanel() {
     }
   }, [matchIdRaw]);
 
-  const amountWei = parseUnits(amount.toString(), 18);
+  const amountWei = (() => {
+    if (!(amount > 0)) return 0n;
+    try {
+      return parseUnits(amount.toString(), 18);
+    } catch {
+      return 0n;
+    }
+  })();
 
   const { data: match } = useReadContract({
     abi: snakAbi,
