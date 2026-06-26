@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "../../theme.css";
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -30,7 +28,7 @@ a { color: inherit; }
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   color: var(--color-snow);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .app-shell {
@@ -59,28 +57,56 @@ h1, h2, h3, h4, h5, h6 {
 .display-xl {
   color: var(--color-snow);
   font-family: var(--font-display);
-  font-size: clamp(48px, 8vw, 100px);
+  font-size: 48px;
   font-weight: 700;
-  letter-spacing: -0.055em;
-  line-height: 0.88;
+  letter-spacing: 0;
+  line-height: 0.94;
   text-transform: uppercase;
 }
 
 .display-lg {
   color: var(--color-snow);
   font-family: var(--font-display);
-  font-size: clamp(38px, 5vw, 76px);
+  font-size: 38px;
   font-weight: 700;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
   line-height: 0.95;
   text-transform: uppercase;
 }
 
 .body-lg {
   color: var(--color-cloud);
-  font-size: clamp(16px, 1.35vw, 20px);
+  font-size: 16px;
   line-height: 1.6;
   opacity: 0.82;
+}
+
+@media (min-width: 768px) {
+  .display-xl {
+    font-size: 76px;
+  }
+
+  .display-lg {
+    font-size: 58px;
+  }
+
+  .body-lg {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .display-xl {
+    font-size: 92px;
+  }
+
+  .display-lg {
+    font-size: 72px;
+  }
+
+  .body-lg {
+    font-size: 20px;
+  }
 }
 
 .eyebrow {
@@ -197,6 +223,19 @@ h1, h2, h3, h4, h5, h6 {
 .btn-compact {
   padding: 10px 18px;
   font-size: 12px;
+}
+
+.status-rail {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  overflow: hidden;
+}
+
+.status-rail span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .btn-primary::before {
