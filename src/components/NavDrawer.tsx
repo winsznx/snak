@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
+import { ConnectButton } from "./ConnectButton";
+import { NetworkSelector } from "./NetworkSelector";
 
 const LINKS = [
   { href: "/play", label: "Arena" },
@@ -10,7 +13,7 @@ const LINKS = [
   { href: "/", label: "Home" },
 ];
 
-export function NavDrawer() {
+export function NavDrawer({ showWallet = true }: { showWallet?: boolean }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -18,6 +21,7 @@ export function NavDrawer() {
 
   useEffect(() => {
     if (!open) return;
+    const trigger = triggerRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -55,7 +59,7 @@ export function NavDrawer() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKey);
       // Restore focus to the trigger so the user lands back where they were.
-      triggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [open]);
 
@@ -67,14 +71,16 @@ export function NavDrawer() {
         onClick={() => setOpen(true)}
         aria-label="Open menu"
         aria-expanded={open}
+        aria-controls="snak-mobile-menu"
         aria-haspopup="dialog"
-        className="grid h-10 w-10 place-items-center rounded-md border border-cyan/30 bg-carbon md:hidden"
+        className="grid h-10 w-10 place-items-center rounded-md border border-cyan/30 bg-carbon lg:hidden"
       >
         <span aria-hidden className="text-lg leading-none text-cyan">☰</span>
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-[80] md:hidden">
+      {open &&
+        createPortal(
+          <div className="fixed inset-0 z-[80] lg:hidden">
           {/* aria-hidden div instead of <button> so the backdrop doesn't enter
               the focus order in front of the dialog. */}
           <div
@@ -83,11 +89,12 @@ export function NavDrawer() {
             className="absolute inset-0 bg-void/80 backdrop-blur-sm"
           />
           <div
+            id="snak-mobile-menu"
             ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="absolute inset-y-0 right-0 flex w-[min(320px,86vw)] flex-col gap-3 border-l border-cyan/30 bg-carbon p-6 shadow-[0_0_60px_rgba(0,229,255,0.15)]"
+            className="absolute inset-y-0 right-0 flex w-[min(340px,90vw)] flex-col gap-4 overflow-y-auto border-l border-cyan/30 bg-carbon p-5 shadow-[0_0_60px_rgba(0,229,255,0.15)]"
           >
             <div className="flex items-center justify-between">
               <span className="font-display text-lg font-bold uppercase tracking-[0.2em] text-snow">
@@ -115,9 +122,21 @@ export function NavDrawer() {
                 </Link>
               ))}
             </nav>
+            <div className="mt-3 space-y-3 border-t border-cyan/10 pt-4">
+              <NetworkSelector />
+              {showWallet ? <ConnectButton /> : null}
+              <Link
+                href="/play"
+                onClick={() => setOpen(false)}
+                className="btn-primary btn-compact w-full"
+              >
+                Enter Arena
+              </Link>
+            </div>
           </div>
-        </div>
-      )}
+        </div>,
+          document.body,
+        )}
     </>
   );
 }

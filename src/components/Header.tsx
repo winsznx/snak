@@ -21,19 +21,23 @@ export function Header({ showWallet = true }: { showWallet?: boolean }) {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 rounded-lg bg-carbon/80 p-1 md:flex">
+        <nav className="hidden items-center gap-1 rounded-lg bg-carbon/80 p-1 lg:flex">
           <Link href="/play" className="nav-link">Arena</Link>
           <Link href="/leaderboard" className="nav-link">Rankings</Link>
           <Link href="/play#boost" className="nav-link">Boost</Link>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <NetworkSelector />
-          {showWallet ? <ConnectButton /> : null}
-          <Link href="/play" className="hidden sm:inline-flex btn-primary btn-compact">
-            Enter Arena
-          </Link>
-          <NavDrawer />
+          <div className="hidden items-center gap-2 lg:flex">
+            <NetworkSelector />
+            {showWallet ? <ConnectButton /> : null}
+          </div>
+          <div className="hidden lg:block">
+            <Link href="/play" className="btn-primary btn-compact">
+              Enter Arena
+            </Link>
+          </div>
+          <NavDrawer showWallet={showWallet} />
         </div>
       </div>
     </header>

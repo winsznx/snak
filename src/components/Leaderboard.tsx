@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useConfig } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
@@ -49,17 +49,14 @@ type Row = {
 };
 
 export function Leaderboard() {
-  const config = useConfig();
   const { kind } = useChainKind();
-  const [chain, setChain] = useState<ChainTab>(kind);
 
-  // The HEADER NetworkSelector is the single source of truth for the global
-  // chain kind. The in-page tab follows when the header flips, but flipping
-  // the in-page tab is local-only — it doesn't side-effect the global state
-  // and silently switch contracts on every other route.
-  useEffect(() => {
-    setChain(kind);
-  }, [kind]);
+  return <LeaderboardTable key={kind} initialChain={kind} />;
+}
+
+function LeaderboardTable({ initialChain }: { initialChain: ChainTab }) {
+  const config = useConfig();
+  const [chain, setChain] = useState<ChainTab>(initialChain);
 
   const celoQuery = useQuery({
     queryKey: ["snak-leaderboard-celo", celo.id, SNAK_ADDRESS],
