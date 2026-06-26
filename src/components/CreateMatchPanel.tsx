@@ -72,14 +72,18 @@ export function CreateMatchPanel() {
   useEffect(() => {
     if (confirmed && phase === "approving") {
       void refetchAllowance();
-      setPhase("idle");
+      const timer = window.setTimeout(() => setPhase("idle"), 0);
+      return () => window.clearTimeout(timer);
     }
   }, [confirmed, phase, refetchAllowance]);
 
   // Drop phase to idle on wallet reject / contract revert so the CTA returns
   // to "Open arena ▸" instead of staying on "Approving stake…".
   useEffect(() => {
-    if (writeError || stx.error) setPhase("idle");
+    if (writeError || stx.error) {
+      const timer = window.setTimeout(() => setPhase("idle"), 0);
+      return () => window.clearTimeout(timer);
+    }
   }, [writeError, stx.error]);
 
   // Parse the ArenaCreated event so the host gets a real match id to share —

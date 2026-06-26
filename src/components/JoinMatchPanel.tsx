@@ -68,7 +68,8 @@ export function JoinMatchPanel() {
   useEffect(() => {
     if (confirmed && phase === "approving") {
       void refetchAllowance();
-      setPhase("idle");
+      const timer = window.setTimeout(() => setPhase("idle"), 0);
+      return () => window.clearTimeout(timer);
     }
   }, [confirmed, phase, refetchAllowance]);
 

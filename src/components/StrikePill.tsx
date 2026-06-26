@@ -42,7 +42,7 @@ export function StrikePill() {
   const f = free !== undefined ? Number(free) : 0;
 
   return (
-    <div className="px-3 py-1.5 rounded border border-toxic/40 bg-carbon font-mono text-[11px] uppercase tracking-widest text-toxic flex items-center gap-3">
+    <div className="flex w-full items-center justify-center gap-3 rounded border border-toxic/40 bg-carbon px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest text-toxic sm:w-auto">
       <span>STRIKE_RUN&nbsp;<span className="text-snow">{r}</span></span>
       <span className="text-silver">·</span>
       <span>FREE&nbsp;<span className="text-snow">{f}</span></span>

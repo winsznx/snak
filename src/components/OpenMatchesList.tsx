@@ -144,9 +144,12 @@ export function OpenMatchesList() {
       // Refetch allowance the moment any receipt confirms — if the user just
       // approved cUSD for a row, the cached value would otherwise stay stale
       // and the next click would send ANOTHER approve instead of joinMatch.
-      void refetchAllowance();
-      resetWrite();
-      setActiveMatchId(null);
+      const timer = window.setTimeout(() => {
+        void refetchAllowance();
+        resetWrite();
+        setActiveMatchId(null);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [confirmed, txHash, resetWrite, refetchAllowance]);
 

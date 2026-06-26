@@ -97,8 +97,8 @@ export function StrikeButton() {
   const [stacksCooldownLabel, setStacksCooldownLabel] = useState<string | null>(null);
   useEffect(() => {
     if (kind !== "stacks" || !stxPrincipal) {
-      setStacksCooldownLabel(null);
-      return;
+      const resetTimer = window.setTimeout(() => setStacksCooldownLabel(null), 0);
+      return () => window.clearTimeout(resetTimer);
     }
     const compute = () => {
       try {
@@ -114,9 +114,12 @@ export function StrikeButton() {
         setStacksCooldownLabel(null);
       }
     };
-    compute();
+    const initial = window.setTimeout(compute, 0);
     const id = window.setInterval(compute, 30_000);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(id);
+    };
   }, [kind, stxPrincipal, stx.txid]);
 
   const ctaCelo = mining
@@ -149,7 +152,7 @@ export function StrikeButton() {
       onClick={submit}
       disabled={!canSubmit}
       aria-busy={mining || isPending || stx.pending}
-      className="px-3 py-2 min-h-[44px] min-w-[160px] inline-flex items-center justify-center rounded border border-toxic/40 bg-carbon font-mono text-[11px] uppercase tracking-widest text-toxic hover:border-toxic disabled:opacity-30"
+      className="inline-flex min-h-[44px] min-w-[160px] w-full items-center justify-center rounded border border-toxic/40 bg-carbon px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-toxic hover:border-toxic disabled:opacity-30 sm:w-auto"
     >
       {cta}
     </button>
