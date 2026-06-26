@@ -40,18 +40,11 @@ export default function LeaderboardPage() {
       </section>
 
       <div className="relative z-10 mt-auto overflow-hidden border-t border-ash bg-carbon/50 py-3 backdrop-blur-md">
-        <div
-          className="flex w-max gap-12 whitespace-nowrap font-mono text-xs text-smoke animate-[marquee_20s_linear_infinite]"
-          aria-hidden
-        >
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="flex gap-12">
-              <span>SNAK · CELO + STACKS MAINNET</span>
-              <span className="text-cyan">SOLIDITY · CELO 42220</span>
-              <span>CLARITY · STACKS MAINNET</span>
-              <span className="text-toxic">STATUS: ONLINE</span>
-            </div>
-          ))}
+        <div className="container-page status-rail font-mono text-xs uppercase tracking-widest text-smoke">
+          <span>SNAK · CELO + STACKS MAINNET</span>
+          <span className="text-cyan">SOLIDITY · CELO 42220</span>
+          <span>CLARITY · STACKS MAINNET</span>
+          <span className="text-toxic">STATUS: ONLINE</span>
         </div>
       </div>
     </main>

@@ -25,7 +25,7 @@ export default function Play() {
 
       <div className="relative z-10 mt-6 flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 rounded-lg border border-ash bg-carbon/70 p-3 backdrop-blur">
         <Link href="/" prefetch={false} className="nav-link">Abort mission</Link>
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="grid w-full min-w-0 grid-cols-1 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-3">
           <StrikePill />
           <StrikeButton />
         </div>

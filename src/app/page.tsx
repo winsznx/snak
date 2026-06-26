@@ -8,7 +8,7 @@ export default function Home() {
       <div className="scanline" aria-hidden />
       <Header />
 
-      <section className="container-page relative z-10 grid flex-1 items-center gap-12 py-16 md:grid-cols-[1fr_480px] md:py-24">
+      <section className="container-page relative z-10 grid flex-1 items-center gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(360px,480px)]">
         <div>
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan/30 bg-cyan/5 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-cyan shadow-[0_0_20px_rgba(0,229,255,0.1)]">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan animate-pulse-neon" />
@@ -43,24 +43,11 @@ export default function Home() {
       </section>
 
       <div className="relative z-20 overflow-hidden border-t border-ash bg-carbon/50 py-3 backdrop-blur-md">
-        <div
-          className="flex w-max gap-12 whitespace-nowrap font-mono text-xs text-smoke animate-[marquee_20s_linear_infinite]"
-          aria-hidden
-        >
-          {/*
-            Children duplicated so the keyframe's -50% translate has a second
-            copy to roll in. Without the dupe the belt would slide once and
-            leave empty space. aria-hidden because the line is purely
-            atmospheric — no real-time data.
-          */}
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="flex gap-12">
-              <span>AGENT_STATUS: ONLINE</span>
-              <span className="text-cyan">ARENA_ESCROW: cUSD + STX</span>
-              <span>STAKE_RANGE: $0.50 — $5</span>
-              <span className="text-toxic">PRIZE_SPLIT: 60/30/10</span>
-            </div>
-          ))}
+        <div className="container-page status-rail font-mono text-xs uppercase tracking-widest text-smoke">
+          <span>AGENT_STATUS: ONLINE</span>
+          <span className="text-cyan">ARENA_ESCROW: cUSD + STX</span>
+          <span>STAKE_RANGE: $0.50 - $5</span>
+          <span className="text-toxic">PRIZE_SPLIT: 60/30/10</span>
         </div>
       </div>
     </main>
@@ -69,7 +56,7 @@ export default function Home() {
 
 function ArenaPreview() {
   return (
-    <div className="relative z-20 w-full animate-float">
+    <div className="relative z-20 mx-auto w-full max-w-[480px] animate-float lg:max-w-none">
       <div className="surface-elevated relative aspect-square overflow-hidden">
         <div className="absolute left-0 right-0 top-0 z-30 flex h-12 items-center justify-between border-b border-ash bg-carbon/80 px-6 backdrop-blur-md">
           <div className="flex gap-4 font-mono text-xs">

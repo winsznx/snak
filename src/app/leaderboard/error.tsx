@@ -17,7 +17,7 @@ export default function LeaderboardError({
             index failure
           </div>
           <h1 className="mt-3 font-display text-2xl font-bold uppercase tracking-[0.1em] text-snow">
-            Couldn't index events
+            Could not index events
           </h1>
           <p className="mt-3 max-w-md text-sm text-silver">
             Forno may be rate-limiting. Retry in a minute or jump back home.

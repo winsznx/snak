@@ -9,7 +9,7 @@ export default function NotFound() {
           Sector unmapped
         </h1>
         <p className="mt-4 max-w-md text-sm text-silver">
-          That arena id doesn't exist on this network — or it never spawned.
+          That arena id does not exist on this network — or it never spawned.
         </p>
         <div className="mt-8 flex justify-center gap-3">
           <Link
