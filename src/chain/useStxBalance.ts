@@ -25,11 +25,15 @@ export function useStxBalance(): Result {
 
   useEffect(() => {
     if (!isConnected || !address) {
-      setState({ balanceMicroStx: 0n, loading: false, error: null });
-      return;
+      const resetTimer = window.setTimeout(() => {
+        setState({ balanceMicroStx: 0n, loading: false, error: null });
+      }, 0);
+      return () => window.clearTimeout(resetTimer);
     }
     let cancelled = false;
-    setState((s) => ({ ...s, loading: true, error: null }));
+    const loadingTimer = window.setTimeout(() => {
+      if (!cancelled) setState((s) => ({ ...s, loading: true, error: null }));
+    }, 0);
 
     fetch(`${STACKS_API}/extended/v2/addresses/${address}/balances/stx`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
@@ -65,6 +69,7 @@ export function useStxBalance(): Result {
 
     return () => {
       cancelled = true;
+      window.clearTimeout(loadingTimer);
     };
   }, [address, isConnected]);
 

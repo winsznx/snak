@@ -25,11 +25,13 @@ export function useStacksSession(): StacksSessionState {
 
   useEffect(() => {
     if (kind !== "stacks") {
-      setState({ isConnected: false, address: null });
-      return;
+      const resetTimer = window.setTimeout(() => {
+        setState({ isConnected: false, address: null });
+      }, 0);
+      return () => window.clearTimeout(resetTimer);
     }
     const tick = () => setState(readStacksSession());
-    tick();
+    const initialTimer = window.setTimeout(tick, 0);
 
     const onStorage = (e: StorageEvent) => {
       // Both the v8 canonical key and the legacy blockstack-session key get
@@ -47,6 +49,7 @@ export function useStacksSession(): StacksSessionState {
     const interval = window.setInterval(tick, 10_000);
 
     return () => {
+      window.clearTimeout(initialTimer);
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("focus", tick);
       document.removeEventListener("visibilitychange", onVisible);

@@ -16,12 +16,14 @@ export function useNowSec(intervalMs = 60_000) {
   const [nowSec, setNowSec] = useState(0);
 
   useEffect(() => {
-    setNowSec(Math.floor(Date.now() / 1000));
+    const update = () => setNowSec(Math.floor(Date.now() / 1000));
+    const initial = window.setTimeout(update, 0);
     const interval = window.setInterval(
-      () => setNowSec(Math.floor(Date.now() / 1000)),
+      update,
       intervalMs,
     );
     return () => {
+      window.clearTimeout(initial);
       window.clearInterval(interval);
     };
   }, [intervalMs]);

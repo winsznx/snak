@@ -27,13 +27,21 @@ export function ChainProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = parseChainKind(window.localStorage.getItem(STORAGE_KEY));
-      if (saved && saved !== "celo") setKindState(saved);
-    } catch {
-      /* localStorage may throw in private mode — fall through to celo */
-    }
-    setMounted(true);
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = parseChainKind(window.localStorage.getItem(STORAGE_KEY));
+        if (!cancelled && saved && saved !== "celo") setKindState(saved);
+      } catch {
+        /* localStorage may throw in private mode — fall through to celo */
+      } finally {
+        if (!cancelled) setMounted(true);
+      }
+    }, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, []);
 
   const setKind = (next: ChainKind) => {
